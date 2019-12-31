@@ -1,0 +1,20 @@
+{
+  "name": "pistagram",
+  "version": "1.0.0",
+  "description": "A clone of instagram",
+  "main": "./server/index.js",
+  "scripts": {
+    "start": "node ./server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shahzayb/pistagram.git"
+  },
+  "keywords": [],
+  "author": "Shahzaib Sarwar <imshahzayb@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shahzayb/pistagram/issues"
+  },
+  "homepage": "https://github.com/Shahzayb/pistagram#readme"
+}
