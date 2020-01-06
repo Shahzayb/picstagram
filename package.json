@@ -2,9 +2,9 @@
   "name": "pistagram",
   "version": "1.0.0",
   "description": "A clone of instagram",
-  "main": "./server/index.js",
+  "main": "./server/app.js",
   "scripts": {
-    "start": "node ./server/index.js"
+    "start": "node ./server/app.js"
   },
   "repository": {
     "type": "git",

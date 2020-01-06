@@ -62,5 +62,3 @@ typings/
 
 # intellij
 .idea
-
-.prettierrc.json
