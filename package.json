@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A clone of instagram",
   "main": "./api/app.js",
+  "private": true,
   "scripts": {
     "client": "npm start --prefix client",
     "server": "nodemon ./api/app.js",
