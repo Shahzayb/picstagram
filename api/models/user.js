@@ -31,17 +31,13 @@ const UserSchema = new mongoose.Schema(
     following: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        required: true,
-        unique: true
+        ref: 'user'
       }
     ],
     followers: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
-        required: true,
-        unique: true
+        ref: 'user'
       }
     ]
   },
