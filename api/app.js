@@ -1,5 +1,10 @@
 const express = require('express');
+
+// require middlewares
 const logger = require('morgan');
+
+// require routes
+const userRoute = require('./routes/user');
 
 /**
  * Custom .env cofiguration
@@ -14,12 +19,14 @@ require('./utils/db');
 
 const app = express();
 
+// mount middlewares
 app.use(logger('combined'));
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('hello');
-});
+// mount routes
+app.use('/api/user', userRoute);
 
+// start the server
 const PORT = process.env.PORT || '5000';
 
 app.listen(PORT, () => console.log(`server started on port ${PORT}`));
