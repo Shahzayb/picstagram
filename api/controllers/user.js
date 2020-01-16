@@ -12,7 +12,7 @@ exports.postUser = [
       const [password, profilePicUrl, token] = await Promise.all([
         bcrypt.hash(req.body.password, 8),
         gravatar.url(req.body.email),
-        createToken(req.body.username)
+        createToken({ username: req.body.username })
       ]);
 
       const user = await User.create({
@@ -40,3 +40,19 @@ exports.postUser = [
     }
   }
 ];
+
+exports.getMyProfile = (req, res) => {
+  try {
+    res.json({
+      _id: req.user._id,
+      username: req.user.username,
+      name: req.user.name,
+      email: req.user.email,
+      bio: req.user.bio,
+      profilePicUrl: req.user.profilePicUrl
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+};
