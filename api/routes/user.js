@@ -1,16 +1,20 @@
 const express = require('express');
 const controller = require('../controllers/user');
+const auth = require('../middlewares/authenticate');
 
 const router = express.Router();
 
 // register account
 router.post('/', controller.postUser);
 
+// login user
+router.post('/login', (req, res) => res.end());
+
 // get my account info
-router.get('/', (req, res) => res.end());
+router.get('/', auth, controller.getMyProfile);
 
 // update my account
-router.patch('/', (req, res) => res.end());
+router.patch('/', auth, (req, res) => res.end());
 
 // get some user by :username
 router.get('/:username', (req, res) => res.end());
