@@ -25,7 +25,7 @@ exports.postUser = [
 
       console.log(user);
 
-      res.status(201).send({
+      res.status(201).json({
         user: {
           username: user.username,
           name: user.name,
@@ -56,3 +56,39 @@ exports.getMyProfile = (req, res) => {
     res.status(500).send();
   }
 };
+
+exports.loginUser = [
+  validators.loginUser,
+  async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      const user = await User.findOne({ username }).lean();
+
+      if (!user) {
+        return res.status(401).send('invalid username or password');
+      }
+
+      const isEqual = await bcrypt.compare(password, user.password);
+
+      if (!isEqual) {
+        res.status(401).send('invalid username or password');
+      }
+
+      const token = await createToken({ username });
+
+      res.json({
+        user: {
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          profilePicUrl: user.profilePicUrl
+        },
+        token
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
