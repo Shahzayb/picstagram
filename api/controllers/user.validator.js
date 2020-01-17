@@ -38,8 +38,9 @@ exports.postUser = [
       .trim()
       .not()
       .isEmpty()
+      .withMessage('please enter email address')
+      .customSanitizer(email => email.toLowerCase())
       .isEmail()
-      .normalizeEmail()
       .withMessage('please enter valid email')
       .custom((email /*, { req }*/) => {
         return User.exists({ email }).then(exist => {
@@ -68,11 +69,56 @@ exports.loginUser = [
     .trim()
     .not()
     .isEmpty()
-    .withMessage('Please enter username'),
+    .withMessage('Please enter username')
+    .customSanitizer(username => username.toLowerCase()),
   body('password')
     .trim()
     .not()
     .isEmpty()
     .withMessage('please enter password'),
   errorMiddleware
+];
+
+exports.updateAccount = [
+  body('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Please enter username')
+    .customSanitizer(username => username.toLowerCase())
+    .custom((username, { req }) => {
+      return User.exists({ username }).then(exist => {
+        if (exist && username === req.user.username) {
+          return Promise.resolve(true);
+        }
+        return Promise.reject(
+          'Username is already taken. Please enter some other username'
+        );
+      });
+    }),
+  body('name')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Please enter name')
+    .customSanitizer(name => name.toLowerCase()),
+  body('email')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Please enter email')
+    .customSanitizer(email => email.toLowerCase())
+    .isEmail()
+    .withMessage('please enter valid email')
+    .custom((email, { req }) => {
+      return User.exists({ email }).then(exist => {
+        if (exist && email === req.user.email) {
+          return Promise.resolve(true);
+        }
+        return Promise.reject(
+          'email is already taken. Please enter some other email'
+        );
+      });
+    }),
+  body('bio').trim()
 ];
