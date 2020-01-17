@@ -62,3 +62,17 @@ exports.postUser = [
   ],
   errorMiddleware
 ];
+
+exports.loginUser = [
+  body('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('Please enter username'),
+  body('password')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('please enter password'),
+  errorMiddleware
+];
