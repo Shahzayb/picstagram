@@ -92,3 +92,35 @@ exports.loginUser = [
     }
   }
 ];
+
+exports.updateAccount = [
+  validators.updateAccount,
+  async (req, res) => {
+    try {
+      const user = await User.findOneAndUpdate(
+        { username: req.user.username },
+        {
+          username: req.body.username,
+          name: req.body.name,
+          email: req.body.email,
+          bio: req.body.bio
+        },
+        { new: true }
+      ).lean();
+
+      const token = await createToken({ username: user.username });
+
+      res.json({
+        user: {
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          profilePicUrl: user.profilePicUrl
+        },
+        token
+      });
+    } catch (e) {
+      res.status(500).send();
+    }
+  }
+];

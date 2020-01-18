@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 mongoose.set('toObject', { getters: true });
 
-const { DB_URL, NODE_ENV } = process.env;
+const { DB_URL } = process.env;
 
 mongoose
   .connect(DB_URL, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    autoIndex: NODE_ENV === 'production' ? false : true
+    useFindAndModify: false
   })
   .catch(err => {
     console.error("couldn't connect to the database", err);

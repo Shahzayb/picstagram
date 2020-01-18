@@ -14,7 +14,7 @@ router.post('/login', controller.loginUser);
 router.get('/', auth, controller.getMyProfile);
 
 // update my account
-router.patch('/', auth, (req, res) => res.end());
+router.patch('/', auth, controller.updateAccount);
 
 // get some user by :username
 router.get('/:username', (req, res) => res.end());
