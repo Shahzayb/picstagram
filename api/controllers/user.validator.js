@@ -84,11 +84,15 @@ exports.updateAccount = [
     .trim()
     .not()
     .isEmpty()
+    // .not()
+    // .exists()
     .withMessage('Please enter username')
     .customSanitizer(username => username.toLowerCase())
     .custom((username, { req }) => {
       return User.exists({ username }).then(exist => {
-        if (exist && username === req.user.username) {
+        if (!exist) {
+          return Promise.resolve(true);
+        } else if (exist && username === req.user.username) {
           return Promise.resolve(true);
         }
         return Promise.reject(
@@ -100,19 +104,25 @@ exports.updateAccount = [
     .trim()
     .not()
     .isEmpty()
+    // .not()
+    // .exists()
     .withMessage('Please enter name')
     .customSanitizer(name => name.toLowerCase()),
   body('email')
     .trim()
     .not()
     .isEmpty()
+    // .not()
+    // .exists()
     .withMessage('Please enter email')
     .customSanitizer(email => email.toLowerCase())
     .isEmail()
     .withMessage('please enter valid email')
     .custom((email, { req }) => {
       return User.exists({ email }).then(exist => {
-        if (exist && email === req.user.email) {
+        if (!exist) {
+          return Promise.resolve(true);
+        } else if (exist && email === req.user.email) {
           return Promise.resolve(true);
         }
         return Promise.reject(
@@ -120,5 +130,6 @@ exports.updateAccount = [
         );
       });
     }),
-  body('bio').trim()
+  body('bio').trim(),
+  errorMiddleware
 ];
