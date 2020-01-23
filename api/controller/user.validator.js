@@ -1,5 +1,5 @@
 const { body, param, validationResult } = require('express-validator');
-const User = require('../models/user');
+const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 
 const errorMiddleware = (req, res, next) => {

@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const gravatar = require('gravatar');
 
-const User = require('../models/user');
+const User = require('../model/user');
 const validators = require('./user.validator');
-const { createToken } = require('../utils/jwt');
+const { createToken } = require('../util/jwt');
 
 exports.postUser = [
   validators.postUser,
