@@ -17,7 +17,13 @@ router.get('/', auth, controller.getMyProfile);
 router.patch('/', auth, controller.updateAccount);
 
 // get some user by :username
-router.get('/:username', (req, res) => res.end());
+router.get('/:username', controller.getUserByUsername);
+
+// get followers of some user with pagination
+router.get('/:username/follower', (req, res) => res.end());
+
+// get followings of some user with pagination
+router.get('/:username/following', (req, res) => res.end());
 
 // get pictures of a user with pagination
 router.get('/:username/photos', (req, res) => res.end());

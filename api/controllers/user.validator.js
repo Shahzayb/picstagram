@@ -1,5 +1,6 @@
-const { body, validationResult } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
 const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
 const errorMiddleware = (req, res, next) => {
   const errors = validationResult(req);
@@ -84,8 +85,6 @@ exports.updateAccount = [
     .trim()
     .not()
     .isEmpty()
-    // .not()
-    // .exists()
     .withMessage('Please enter username')
     .customSanitizer(username => username.toLowerCase())
     .custom((username, { req }) => {
@@ -104,16 +103,12 @@ exports.updateAccount = [
     .trim()
     .not()
     .isEmpty()
-    // .not()
-    // .exists()
     .withMessage('Please enter name')
     .customSanitizer(name => name.toLowerCase()),
   body('email')
     .trim()
     .not()
     .isEmpty()
-    // .not()
-    // .exists()
     .withMessage('Please enter email')
     .customSanitizer(email => email.toLowerCase())
     .isEmail()
@@ -132,4 +127,53 @@ exports.updateAccount = [
     }),
   body('bio').trim(),
   errorMiddleware
+];
+
+exports.getUserByUsername = [
+  param('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .custom(username => username.toLowerCase())
+    .withMessage('please enter username')
+    .custom((username, { req }) => {
+      return User.exists({ username }).then(exist => {
+        if (!exist) {
+          return Promise.reject('user does not exists');
+        }
+        return true;
+      });
+    }),
+  errorMiddleware,
+  // extract Authorization header if exists and pass doc of authenticated user
+  async (req, res, next) => {
+    try {
+      if (!req.header('Authorization')) {
+        return;
+      }
+      const token = req.header('Authorization').replace('Bearer ', '');
+      const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (req.params.username === verifiedToken.username) {
+        return;
+      }
+
+      const user = await User.findOne(
+        {
+          username: verifiedToken.username
+        },
+        { username: 1 }
+      ).lean();
+
+      if (!user) {
+        return;
+      }
+
+      req.authUser = user;
+    } catch (e) {
+      console.log(e);
+    } finally {
+      next();
+    }
+  }
 ];
