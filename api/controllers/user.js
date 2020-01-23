@@ -63,7 +63,9 @@ exports.loginUser = [
     try {
       const { username, password } = req.body;
 
-      const user = await User.findOne({ username }).lean();
+      const user = await User.findOne({ username })
+        .select('+username +name +email +profilePicUrl')
+        .lean();
 
       if (!user) {
         return res.status(401).send('invalid username or password');
@@ -115,11 +117,45 @@ exports.updateAccount = [
           username: user.username,
           name: user.name,
           email: user.email,
-          profilePicUrl: user.profilePicUrl
+          profilePicUrl: user.profilePicUrl,
+          bio: user.bio
         },
         token
       });
     } catch (e) {
+      res.status(500).send();
+    }
+  }
+];
+
+exports.getUserByUsername = [
+  validators.getUserByUsername,
+  async (req, res) => {
+    try {
+      const $project = {
+        followersCount: { $size: '$followers' },
+        followingCount: { $size: '$following' },
+        _id: 1,
+        username: 1,
+        name: 1,
+        bio: 1,
+        profilePicUrl: 1
+      };
+      if (req.authUser) {
+        $project.isFollowedByMe = { $in: [req.authUser._id, '$followers'] };
+      }
+      const user = await User.aggregate([
+        { $match: { username: req.params.username } },
+        {
+          $project
+        }
+      ]);
+
+      console.log(user);
+
+      res.json(user[0]);
+    } catch (e) {
+      console.log(e);
       res.status(500).send();
     }
   }

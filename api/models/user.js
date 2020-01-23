@@ -44,14 +44,6 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-UserSchema.virtual('followingCount').get(function() {
-  return this.following.length;
-});
-
-UserSchema.virtual('followersCount').get(function() {
-  return this.followers.length;
-});
-
 const User = mongoose.model('user', UserSchema);
 
 module.exports = User;

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-mongoose.set('toObject', { getters: true });
-
 const { DB_URL } = process.env;
 
 mongoose
