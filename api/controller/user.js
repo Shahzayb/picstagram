@@ -23,8 +23,6 @@ exports.postUser = [
         profilePicUrl
       });
 
-      console.log(user);
-
       res.status(201).json({
         user: {
           username: user.username,
@@ -154,6 +152,36 @@ exports.getUserByUsername = [
       console.log(user);
 
       res.json(user[0]);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
+
+exports.followUser = [
+  validators.followUser,
+  async (req, res) => {
+    try {
+      if (req.user.username === req.params.username) {
+        return res
+          .status(422)
+          .send("follower and followee couldn't be the same user");
+      }
+      const user = await User.findOneAndUpdate(
+        { username: req.params.username },
+        { $addToSet: { followers: req.user._id } },
+        { new: true }
+      ).lean();
+
+      await User.updateOne(
+        { _id: req.user._id },
+        {
+          $addToSet: { following: user._id }
+        }
+      ).lean();
+
+      res.end();
     } catch (e) {
       console.log(e);
       res.status(500).send();

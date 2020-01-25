@@ -20,7 +20,7 @@ router.patch('/', auth, controller.updateAccount);
 router.get('/:username', controller.getUserByUsername);
 
 // follow user
-router.patch('/:username/follow', auth, (req, res) => res.end());
+router.patch('/:username/follow', auth, controller.followUser);
 
 // unfollow user
 router.patch('/:username/unfollow', auth, (req, res) => res.end());

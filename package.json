@@ -2,12 +2,25 @@
   "name": "pistagram",
   "version": "1.0.0",
   "description": "A clone of instagram",
-  "main": "./api/app.js",
+  "main": "app.js",
   "private": true,
   "scripts": {
     "client": "npm start --prefix client",
-    "server": "nodemon ./api/app.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "server": "nodemon app.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "jest --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/util/",
+      "/tests/config/",
+      "/client/"
+    ]
   },
   "repository": {
     "type": "git",
@@ -23,7 +36,10 @@
   "devDependencies": {
     "concurrently": "^5.0.2",
     "dotenv": "^8.2.0",
-    "nodemon": "^2.0.2"
+    "jest": "^25.1.0",
+    "mongodb-memory-server": "^6.2.3",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

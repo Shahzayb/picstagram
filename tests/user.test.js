@@ -1,0 +1,67 @@
+const app = require('../api/index.js');
+const supertest = require('supertest');
+
+const User = require('../api/model/user');
+const { createToken } = require('../api/util/jwt');
+
+const req = supertest(app);
+
+test('user can follow other user', async done => {
+  // create user 1
+  let user1 = await User.create({
+    name: 'shahzaib',
+    username: 'shahzaib',
+    password: '123456789',
+    email: 'imshahzayb@gmail.com',
+    profilePicUrl: 'asfsfs'
+  });
+  // create user 2
+  let user2 = await User.create({
+    name: 'shahzaib1',
+    username: 'shahzaib1',
+    password: '123456789',
+    email: 'imshahzayb1@gmail.com',
+    profilePicUrl: 'asfsfs1'
+  });
+  // create jwt by { username } of user 2
+  const jwtToken = createToken({ username: user2.username });
+
+  // follow user 1
+  await req
+    .patch(`/api/user/${user1.username}/follow`)
+    .set('Authorization', 'Bearer ' + jwtToken)
+    .expect(200);
+
+  user1 = await User.findById(user1.id, { followers: 1 }).lean();
+  user2 = await User.findById(user2.id, { following: 1 }).lean();
+
+  // user 2 is following user 1
+  expect(user2.following[0].toString()).toEqual(user1._id.toString());
+  // user 1 is followed by user 2
+  expect(user1.followers[0].toString()).toEqual(user2._id.toString());
+
+  done();
+});
+
+test('user cannot follow itself', async done => {
+  // create user
+  const user = await User.create({
+    name: 'shahzaib',
+    username: 'shahzaib',
+    password: '123456789',
+    email: 'imshahzayb@gmail.com',
+    profilePicUrl: 'asfsfs'
+  });
+  // create jwt by { username }
+  const jwtToken = createToken({ username: user.username });
+  // follow endpoint
+  await req
+    .patch(`/api/user/${user.username}/follow`)
+    .set('Authorization', 'Bearer ' + jwtToken)
+    .expect(422);
+
+  expect(user.following.length).toEqual(0);
+  expect(user.followers.length).toEqual(0);
+
+  done();
+});

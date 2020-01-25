@@ -8,7 +8,7 @@ const auth = async (req, res, next) => {
 
     const user = await User.findOne({
       username: verifiedToken.username
-    });
+    }).lean();
 
     if (!user) {
       throw new Error();
