@@ -55,6 +55,8 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
+dev.env
+test.env
 .env
 
 # next.js build output
@@ -62,6 +64,3 @@ typings/
 
 # intellij
 .idea
-
-
-.prettierrc.json

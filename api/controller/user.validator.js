@@ -1,10 +1,9 @@
 const { body, param, validationResult } = require('express-validator');
-const User = require('../models/user');
+const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 
 const errorMiddleware = (req, res, next) => {
   const errors = validationResult(req);
-  console.log(req.body);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   } else {
@@ -176,4 +175,22 @@ exports.getUserByUsername = [
       next();
     }
   }
+];
+
+exports.followUser = [
+  param('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .custom(username => username.toLowerCase())
+    .withMessage('please enter username')
+    .custom(username => {
+      return User.exists({ username }).then(exist => {
+        if (!exist) {
+          return Promise.reject('user does not exist');
+        }
+        return true;
+      });
+    }),
+  errorMiddleware
 ];

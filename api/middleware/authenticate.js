@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 
 const auth = async (req, res, next) => {
@@ -8,7 +8,7 @@ const auth = async (req, res, next) => {
 
     const user = await User.findOne({
       username: verifiedToken.username
-    });
+    }).lean();
 
     if (!user) {
       throw new Error();

@@ -1,6 +1,6 @@
 const express = require('express');
-const controller = require('../controllers/user');
-const auth = require('../middlewares/authenticate');
+const controller = require('../controller/user');
+const auth = require('../middleware/authenticate');
 
 const router = express.Router();
 
@@ -19,8 +19,14 @@ router.patch('/', auth, controller.updateAccount);
 // get some user by :username
 router.get('/:username', controller.getUserByUsername);
 
+// follow user
+router.patch('/:username/follow', auth, controller.followUser);
+
+// unfollow user
+router.patch('/:username/unfollow', auth, (req, res) => res.end());
+
 // get followers of some user with pagination
-router.get('/:username/follower', (req, res) => res.end());
+router.get('/:username/followers', (req, res) => res.end());
 
 // get followings of some user with pagination
 router.get('/:username/following', (req, res) => res.end());
