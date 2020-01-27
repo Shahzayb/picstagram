@@ -65,3 +65,43 @@ test('user cannot follow itself', async done => {
 
   done();
 });
+
+test('user can unfollow other user', async done => {
+  // create user 1
+  let user1 = await User.create({
+    name: 'shahzaib',
+    username: 'shahzaib',
+    password: '123456789',
+    email: 'imshahzayb@gmail.com',
+    profilePicUrl: 'asfsfs'
+  });
+  // create user 2
+  let user2 = await User.create({
+    name: 'shahzaib1',
+    username: 'shahzaib1',
+    password: '123456789',
+    email: 'imshahzayb1@gmail.com',
+    profilePicUrl: 'asfsfs1'
+  });
+  // create jwt of user 1
+  const jwtToken = createToken({ username: user1.username });
+  // user 1 follow user 2
+  user1.following.push(user2._id);
+  user2.followers.push(user1._id);
+
+  await user1.save();
+  await user2.save();
+  // user 1 unfollow user 2
+  const res = await req
+    .patch(`/api/user/${user2.username}/unfollow`)
+    .set('Authorization', `Bearer ${jwtToken}`);
+
+  user1 = await User.findById(user1._id, { following: 1 }).lean();
+  user2 = await User.findById(user2._id, { followers: 1 }).lean();
+
+  expect(res.status).toEqual(200);
+  expect(user1.following.length).toEqual(0);
+  expect(user2.followers.length).toEqual(0);
+  // test
+  done();
+});
