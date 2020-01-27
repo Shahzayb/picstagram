@@ -188,3 +188,33 @@ exports.followUser = [
     }
   }
 ];
+
+exports.unfollowUser = [
+  validators.unfollowUser,
+  async (req, res) => {
+    try {
+      if (req.user.username === req.params.username) {
+        return res
+          .status(422)
+          .send("follower and followee couldn't be the same user");
+      }
+      const user = await User.findOneAndUpdate(
+        { username: req.params.username },
+        { $pull: { followers: req.user._id } },
+        { new: true }
+      ).lean();
+
+      await User.updateOne(
+        { _id: req.user._id },
+        {
+          $pull: { following: user._id }
+        }
+      ).lean();
+
+      res.end();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
