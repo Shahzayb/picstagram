@@ -194,3 +194,21 @@ exports.followUser = [
     }),
   errorMiddleware
 ];
+
+exports.unfollowUser = [
+  param('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .custom(username => username.toLowerCase())
+    .withMessage('please enter username')
+    .custom(username => {
+      return User.exists({ username }).then(exist => {
+        if (!exist) {
+          return Promise.reject('user does not exist');
+        }
+        return true;
+      });
+    }),
+  errorMiddleware
+];
