@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const gravatar = require('gravatar');
 
 const User = require('../model/user');
+const Photo = require('../model/photo');
 const validators = require('./user.validator');
 const { createToken } = require('../util/jwt');
 
@@ -212,6 +213,25 @@ exports.unfollowUser = [
       ).lean();
 
       res.end();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
+
+exports.photoByUsername = [
+  validators.photoByUsername,
+  async (req, res) => {
+    console.log(req.query, req.params);
+    try {
+      const { page, size } = req.query;
+      const skip = (page - 1) * size;
+      const photos = await Photo.find({})
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(size);
+      res.json(photos);
     } catch (e) {
       console.log(e);
       res.status(500).send();

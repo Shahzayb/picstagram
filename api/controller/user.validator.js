@@ -1,4 +1,4 @@
-const { body, param, validationResult } = require('express-validator');
+const { body, param, query, validationResult } = require('express-validator');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
 
@@ -133,7 +133,7 @@ exports.getUserByUsername = [
     .trim()
     .not()
     .isEmpty()
-    .custom(username => username.toLowerCase())
+    .customSanitizer(username => username.toLowerCase())
     .withMessage('please enter username')
     .custom((username, { req }) => {
       return User.exists({ username }).then(exist => {
@@ -182,7 +182,7 @@ exports.followUser = [
     .trim()
     .not()
     .isEmpty()
-    .custom(username => username.toLowerCase())
+    .customSanitizer(username => username.toLowerCase())
     .withMessage('please enter username')
     .custom(username => {
       return User.exists({ username }).then(exist => {
@@ -200,7 +200,7 @@ exports.unfollowUser = [
     .trim()
     .not()
     .isEmpty()
-    .custom(username => username.toLowerCase())
+    .customSanitizer(username => username.toLowerCase())
     .withMessage('please enter username')
     .custom(username => {
       return User.exists({ username }).then(exist => {
@@ -210,5 +210,49 @@ exports.unfollowUser = [
         return true;
       });
     }),
+  errorMiddleware
+];
+
+exports.photoByUsername = [
+  param('username')
+    .trim()
+    .not()
+    .isEmpty()
+    .customSanitizer(username => username.toLowerCase())
+    .withMessage('please enter username')
+    .custom(username => {
+      return User.exists({ username }).then(exist => {
+        if (!exist) {
+          return Promise.reject('user does not exist');
+        }
+        return true;
+      });
+    }),
+  query('page')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('page number is required')
+    .toInt()
+    .custom(page => {
+      if (page < 1) {
+        return Promise.reject();
+      }
+      return true;
+    })
+    .withMessage('page should be a number. and should be greater than 0'),
+  query('size')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('size number is required')
+    .toInt()
+    .custom(size => {
+      if (size < 1 || size > 100) {
+        return Promise.reject();
+      }
+      return true;
+    })
+    .withMessage('size should be a number and between 1 and 100'),
   errorMiddleware
 ];

@@ -2,6 +2,7 @@ const app = require('../api/index.js');
 const supertest = require('supertest');
 
 const User = require('../api/model/user');
+const Photo = require('../api/model/photo');
 const { createToken } = require('../api/util/jwt');
 
 const req = supertest(app);
@@ -103,5 +104,31 @@ test('user can unfollow other user', async done => {
   expect(user1.following.length).toEqual(0);
   expect(user2.followers.length).toEqual(0);
   // test
+  done();
+});
+
+test('can get photos by username with pagination', async done => {
+  let user = await User.create({
+    name: 'shahzaib',
+    username: 'shahzaib',
+    password: '123456789',
+    email: 'imshahzayb@gmail.com',
+    profilePicUrl: 'asfsfs'
+  });
+
+  let photo1 = await Photo.create({
+    photoUrl: 'url1',
+    userId: user._id,
+    title: '1'
+  });
+
+  let res = await req.get(`/api/user/${user.username}/photo?page=1&size=10`);
+
+  expect(res.body[0]._id.toString()).toEqual(photo1._id.toString());
+
+  res = await req.get(`/api/user/${user.username}/photo?page=2&size=10`);
+
+  expect(res.body.length).toEqual(0);
+
   done();
 });

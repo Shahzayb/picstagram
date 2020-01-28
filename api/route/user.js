@@ -32,7 +32,7 @@ router.get('/:username/followers', (req, res) => res.end());
 router.get('/:username/following', (req, res) => res.end());
 
 // get pictures of a user with pagination
-router.get('/:username/photos', (req, res) => res.end());
+router.get('/:username/photo', controller.photoByUsername);
 
 // get suggested users ( i.e. to follow )
 router.get('/:username/suggestion', (req, res) => res.end());
