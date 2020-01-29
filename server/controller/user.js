@@ -132,7 +132,7 @@ exports.getUserByUsername = [
   async (req, res) => {
     try {
       const $project = {
-        followersCount: { $size: '$followers' },
+        followerCount: { $size: '$follower' },
         followingCount: { $size: '$following' },
         _id: 1,
         username: 1,
@@ -141,7 +141,7 @@ exports.getUserByUsername = [
         profilePicUrl: 1
       };
       if (req.authUser) {
-        $project.isFollowedByMe = { $in: [req.authUser._id, '$followers'] };
+        $project.isFollowedByMe = { $in: [req.authUser._id, '$follower'] };
       }
       const user = await User.aggregate([
         { $match: { username: req.params.username } },
@@ -169,7 +169,7 @@ exports.followUser = [
       }
       const user = await User.findOneAndUpdate(
         { username: req.params.username },
-        { $addToSet: { followers: req.user._id } },
+        { $addToSet: { follower: req.user._id } },
         { new: true }
       ).lean();
 
@@ -199,7 +199,7 @@ exports.unfollowUser = [
       }
       const user = await User.findOneAndUpdate(
         { username: req.params.username },
-        { $pull: { followers: req.user._id } },
+        { $pull: { follower: req.user._id } },
         { new: true }
       ).lean();
 

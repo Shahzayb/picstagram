@@ -33,13 +33,13 @@ test('user can follow other user', async done => {
     .set('Authorization', 'Bearer ' + jwtToken)
     .expect(200);
 
-  user1 = await User.findById(user1.id, { followers: 1 }).lean();
+  user1 = await User.findById(user1.id, { follower: 1 }).lean();
   user2 = await User.findById(user2.id, { following: 1 }).lean();
 
   // user 2 is following user 1
   expect(user2.following[0].toString()).toEqual(user1._id.toString());
   // user 1 is followed by user 2
-  expect(user1.followers[0].toString()).toEqual(user2._id.toString());
+  expect(user1.follower[0].toString()).toEqual(user2._id.toString());
 
   done();
 });
@@ -62,7 +62,7 @@ test('user cannot follow itself', async done => {
     .expect(422);
 
   expect(user.following.length).toEqual(0);
-  expect(user.followers.length).toEqual(0);
+  expect(user.follower.length).toEqual(0);
 
   done();
 });
@@ -88,7 +88,7 @@ test('user can unfollow other user', async done => {
   const jwtToken = createToken({ username: user1.username });
   // user 1 follow user 2
   user1.following.push(user2._id);
-  user2.followers.push(user1._id);
+  user2.follower.push(user1._id);
 
   await user1.save();
   await user2.save();
@@ -98,11 +98,11 @@ test('user can unfollow other user', async done => {
     .set('Authorization', `Bearer ${jwtToken}`);
 
   user1 = await User.findById(user1._id, { following: 1 }).lean();
-  user2 = await User.findById(user2._id, { followers: 1 }).lean();
+  user2 = await User.findById(user2._id, { follower: 1 }).lean();
 
   expect(res.status).toEqual(200);
   expect(user1.following.length).toEqual(0);
-  expect(user2.followers.length).toEqual(0);
+  expect(user2.follower.length).toEqual(0);
   // test
   done();
 });
