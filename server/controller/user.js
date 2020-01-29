@@ -150,8 +150,6 @@ exports.getUserByUsername = [
         }
       ]);
 
-      console.log(user);
-
       res.json(user[0]);
     } catch (e) {
       console.log(e);
@@ -223,7 +221,6 @@ exports.unfollowUser = [
 exports.photoByUsername = [
   validators.photoByUsername,
   async (req, res) => {
-    console.log(req.query, req.params);
     try {
       const { page, size } = req.query;
       const skip = (page - 1) * size;

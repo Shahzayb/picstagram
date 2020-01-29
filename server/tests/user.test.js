@@ -1,9 +1,9 @@
-const app = require('../api/index.js');
+const app = require('../index');
 const supertest = require('supertest');
 
-const User = require('../api/model/user');
-const Photo = require('../api/model/photo');
-const { createToken } = require('../api/util/jwt');
+const User = require('../model/user');
+const Photo = require('../model/photo');
+const { createToken } = require('../util/jwt');
 
 const req = supertest(app);
 
