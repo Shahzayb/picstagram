@@ -235,3 +235,43 @@ exports.photoByUsername = [
     }
   }
 ];
+
+exports.getFollowing = [
+  validators.getFollowing,
+  async (req, res) => {
+    try {
+      const { page, size } = req.query;
+      const { username } = req.params;
+      const skip = (page - 1) * size;
+
+      const following = await User.aggregate([
+        { $match: { username } },
+        { $project: { _id: 0, following: 1 } },
+        { $unwind: '$following' },
+        { $skip: skip },
+        { $limit: size },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'following',
+            foreignField: '_id',
+            as: 'followerInfo'
+          }
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: [{ $arrayElemAt: ['$followerInfo', 0] }, '$$ROOT']
+            }
+          }
+        },
+        { $project: { name: 1, username: 1, profilePicUrl: 1 } }
+      ]);
+
+      res.json(following);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];

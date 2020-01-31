@@ -29,7 +29,7 @@ router.patch('/:username/unfollow', auth, controller.unfollowUser);
 router.get('/:username/follower', (req, res) => res.end());
 
 // get followings of some user with pagination
-router.get('/:username/following', (req, res) => res.end());
+router.get('/:username/following', controller.getFollowing);
 
 // get pictures of a user with pagination
 router.get('/:username/photo', controller.photoByUsername);
