@@ -26,7 +26,7 @@ router.patch('/:username/follow', auth, controller.followUser);
 router.patch('/:username/unfollow', auth, controller.unfollowUser);
 
 // get followers of some user with pagination
-router.get('/:username/follower', (req, res) => res.end());
+router.get('/:username/follower', controller.getFollower);
 
 // get followings of some user with pagination
 router.get('/:username/following', controller.getFollowing);

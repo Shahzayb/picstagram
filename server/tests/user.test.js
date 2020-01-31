@@ -165,7 +165,7 @@ describe('GET /api/user/:username/following', () => {
       email: 'imshahzayb2@gmail.com',
       profilePicUrl: 'asfsfs1'
     });
-    // create user 3
+    // create user 4
     let user4 = await User.create({
       name: 'shahzaib3',
       username: 'shahzaib3',
@@ -193,6 +193,54 @@ describe('GET /api/user/:username/following', () => {
     expect(res.body[0].username).toBe(user1.username);
     expect(res.body[1].username).toBe(user2.username);
 
+    done();
+  });
+});
+
+describe('GET /api/user/:username/follower', () => {
+  test('can get followers of a user', async done => {
+    // create user 1
+    let user1 = await User.create({
+      name: 'shahzaib',
+      username: 'shahzaib',
+      password: '123456789',
+      email: 'imshahzayb@gmail.com',
+      profilePicUrl: 'asfsfs'
+    });
+    // create user 2
+    let user2 = await User.create({
+      name: 'shahzaib1',
+      username: 'shahzaib1',
+      password: '123456789',
+      email: 'imshahzayb1@gmail.com',
+      profilePicUrl: 'asfsfs1'
+    });
+    // create user 3
+    let user3 = await User.create({
+      name: 'shahzaib2',
+      username: 'shahzaib2',
+      password: '123456789',
+      email: 'imshahzayb2@gmail.com',
+      profilePicUrl: 'asfsfs1'
+    });
+
+    // user 3 is followed by user1, user2
+    user3.follower = [user1._id, user2._id];
+    user1.following = [user3._id];
+    user2.following = [user3._id];
+
+    await user3.save();
+    await user2.save();
+    await user1.save();
+
+    // get follower of user3
+    const res = await req.get(`/api/user/${user3.username}/follower`).query({
+      page: 1,
+      size: 2
+    });
+
+    expect(res.body[0].username).toBe(user1.username);
+    expect(res.body[1].username).toBe(user2.username);
     done();
   });
 });

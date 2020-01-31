@@ -255,6 +255,46 @@ exports.getFollowing = [
             from: 'users',
             localField: 'following',
             foreignField: '_id',
+            as: 'followingInfo'
+          }
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: [{ $arrayElemAt: ['$followingInfo', 0] }, '$$ROOT']
+            }
+          }
+        },
+        { $project: { name: 1, username: 1, profilePicUrl: 1 } }
+      ]);
+
+      res.json(following);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
+
+exports.getFollower = [
+  validators.getFollower,
+  async (req, res) => {
+    try {
+      const { page, size } = req.query;
+      const { username } = req.params;
+      const skip = (page - 1) * size;
+
+      const follower = await User.aggregate([
+        { $match: { username } },
+        { $project: { _id: 0, follower: 1 } },
+        { $unwind: '$follower' },
+        { $skip: skip },
+        { $limit: size },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'follower',
+            foreignField: '_id',
             as: 'followerInfo'
           }
         },
@@ -268,7 +308,7 @@ exports.getFollowing = [
         { $project: { name: 1, username: 1, profilePicUrl: 1 } }
       ]);
 
-      res.json(following);
+      res.json(follower);
     } catch (e) {
       console.log(e);
       res.status(500).send();
