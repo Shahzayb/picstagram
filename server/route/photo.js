@@ -8,7 +8,7 @@ const router = express.Router();
 router.patch('/:photoId/like', auth, controller.likePhoto);
 
 // unlike photo
-router.patch('/:photoId/unlike', auth, (req, res) => res.end());
+router.patch('/:photoId/unlike', auth, controller.unlikePhoto);
 
 // delete photo
 router.delete('/:photoId', auth, (req, res) => res.end());

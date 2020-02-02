@@ -36,3 +36,31 @@ exports.likePhoto = [
     }
   }
 ];
+
+exports.unlikePhoto = [
+  validators.likePhoto,
+  async (req, res) => {
+    try {
+      const like = await Like.deleteOne({
+        photoId: req.params.photoId,
+        userId: req.user._id
+      });
+
+      if (!like.deletedCount) {
+        return res.status(422).send('photo is not liked');
+      }
+
+      await Photo.updateOne(
+        { _id: req.params.photoId },
+        {
+          $inc: { likeCount: -1 }
+        }
+      ).lean();
+
+      res.end();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
