@@ -5,6 +5,11 @@ const PhotoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  tags: [
+    {
+      type: String
+    }
+  ],
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
@@ -16,7 +21,7 @@ const PhotoSchema = new mongoose.Schema({
     required: true,
     maxlength: 120
   },
-  likesCount: {
+  likeCount: {
     type: Number,
     default: 0,
     required: true

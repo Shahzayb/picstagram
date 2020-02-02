@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "server": "nodemon ./app/app.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand --detectOpenHandles"
   },
   "jest": {
     "testEnvironment": "node",
