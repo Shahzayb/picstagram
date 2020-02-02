@@ -1,6 +1,8 @@
 const app = require('../index');
 const supertest = require('supertest');
 
+require('./util/db').setup();
+
 const User = require('../model/user');
 const Photo = require('../model/photo');
 const { createToken } = require('../util/jwt');

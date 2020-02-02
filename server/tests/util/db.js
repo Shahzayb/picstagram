@@ -6,7 +6,7 @@ const mongod = new MongoMemoryServer();
 /**
  * Connect to the in-memory database.
  */
-module.exports.connect = async () => {
+connect = async () => {
   const uri = await mongod.getConnectionString();
 
   const mongooseOpts = {
@@ -22,7 +22,7 @@ module.exports.connect = async () => {
 /**
  * Drop database, close the connection and stop mongod.
  */
-module.exports.closeDatabase = async () => {
+closeDatabase = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongod.stop();
@@ -31,11 +31,34 @@ module.exports.closeDatabase = async () => {
 /**
  * Remove all the data for all db collections.
  */
-module.exports.clearDatabase = async () => {
+clearDatabase = async () => {
   const collections = mongoose.connection.collections;
 
   for (const key in collections) {
     const collection = collections[key];
     await collection.deleteMany();
   }
+};
+
+module.exports.setup = () => {
+  /**
+   * Connect to a new in-memory database before running any tests.
+   */
+  beforeAll(async () => {
+    await connect();
+  });
+
+  /**
+   * Clear all test data after every test.
+   */
+  afterEach(async () => {
+    await clearDatabase();
+  });
+
+  /**
+   * Remove and close the db and server.
+   */
+  afterAll(async () => {
+    await closeDatabase();
+  });
 };

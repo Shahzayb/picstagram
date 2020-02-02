@@ -1,15 +1,7 @@
-const { body, param, query, validationResult } = require('express-validator');
+const { body, param, query } = require('express-validator');
+const { errorMiddleware } = require('../util/validator');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
-
-const errorMiddleware = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
-  } else {
-    return next();
-  }
-};
 
 exports.postUser = [
   [
