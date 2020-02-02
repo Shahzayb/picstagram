@@ -16,3 +16,18 @@ exports.likePhoto = [
     }),
   errorMiddleware
 ];
+
+exports.unlikePhoto = [
+  param('photoId')
+    .trim()
+    .not()
+    .isEmpty()
+    .custom(_id => {
+      return Photo.exists({ _id }).then(exists => {
+        if (!exists) {
+          Promise.reject('Please enter valid photoId');
+        }
+      });
+    }),
+  errorMiddleware
+];
