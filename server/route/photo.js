@@ -17,7 +17,7 @@ router.patch('/:photoId/unlike', auth, controller.unlikePhoto);
 router.delete('/:photoId', auth, (req, res) => res.end());
 
 // post comment on photo
-router.post('/:photoId/comment', auth, (req, res) => res.end());
+router.post('/:photoId/comment', auth, controller.postComment);
 
 // get comments of a photo with pagination
 router.get('/:photoId/comment', (req, res) => res.end());

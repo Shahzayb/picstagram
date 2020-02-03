@@ -1,5 +1,6 @@
 const Photo = require('../model/photo');
 const Like = require('../model/like');
+const Comment = require('../model/comment');
 
 const validators = require('./photo.validator');
 
@@ -71,6 +72,23 @@ exports.unlikePhoto = [
       ).lean();
 
       res.end();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
+
+exports.postComment = [
+  validators.postComment,
+  async (req, res) => {
+    try {
+      const comment = await Comment.create({
+        userId: req.user._id,
+        photoId: req.params.photoId,
+        comment: req.body.comment
+      });
+      res.json(comment);
     } catch (e) {
       console.log(e);
       res.status(500).send();
