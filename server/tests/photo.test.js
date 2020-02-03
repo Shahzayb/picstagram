@@ -128,3 +128,36 @@ describe('patch /api/photo/:photoId/unlike', () => {
     done();
   });
 });
+
+describe('get /api/photo/:photoId', () => {
+  test('should get existing photo by id', async done => {
+    let user = await User.create({
+      name: 'shahzaib',
+      username: 'shahzaib',
+      password: 'dummy hash password',
+      email: 'imshahzayb@gmail.com',
+      profilePicUrl: 'asfsfs'
+    });
+
+    let photo = await Photo.create({
+      photoUrl: 'dummy url',
+      tags: ['a', 'b'],
+      userId: user._id,
+      title: 'a title'
+    });
+
+    const res = await req.get(`/api/photo/${photo._id}`);
+
+    expect(res.body._id).toBe(photo.id);
+
+    done();
+  });
+
+  test('should not get photo by non-existing id', async done => {
+    const res = await req.get(`/api/photo/sdjfsdfsfsdf`);
+
+    expect(res.status).toBe(422);
+
+    done();
+  });
+});

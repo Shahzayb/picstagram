@@ -2,32 +2,21 @@ const { param } = require('express-validator');
 const { errorMiddleware } = require('../util/validator');
 const Photo = require('../model/photo');
 
-exports.likePhoto = [
-  param('photoId')
-    .trim()
-    .not()
-    .isEmpty()
-    .custom(_id => {
-      return Photo.exists({ _id }).then(exists => {
-        if (!exists) {
-          Promise.reject('Please enter valid photoId');
-        }
-      });
-    }),
-  errorMiddleware
-];
+const photoIdParamValidator = param('photoId')
+  .trim()
+  .not()
+  .isEmpty()
+  .custom(_id => {
+    return Photo.exists({ _id }).then(exists => {
+      if (!exists) {
+        throw new Error();
+      }
+    });
+  })
+  .withMessage('Please enter valid photo id');
 
-exports.unlikePhoto = [
-  param('photoId')
-    .trim()
-    .not()
-    .isEmpty()
-    .custom(_id => {
-      return Photo.exists({ _id }).then(exists => {
-        if (!exists) {
-          Promise.reject('Please enter valid photoId');
-        }
-      });
-    }),
-  errorMiddleware
-];
+exports.getPhoto = [photoIdParamValidator, errorMiddleware];
+
+exports.likePhoto = [photoIdParamValidator, errorMiddleware];
+
+exports.unlikePhoto = [photoIdParamValidator, errorMiddleware];

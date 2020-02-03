@@ -85,11 +85,10 @@ exports.updateAccount = [
         } else if (exist && username === req.user.username) {
           return Promise.resolve(true);
         }
-        return Promise.reject(
-          'Username is already taken. Please enter some other username'
-        );
+        throw new Error();
       });
-    }),
+    })
+    .withMessage('Username is already taken. Please enter some other username'),
   body('name')
     .trim()
     .not()
@@ -111,11 +110,10 @@ exports.updateAccount = [
         } else if (exist && email === req.user.email) {
           return Promise.resolve(true);
         }
-        return Promise.reject(
-          'email is already taken. Please enter some other email'
-        );
+        throw new Error();
       });
-    }),
+    })
+    .withMessage('email is already taken. Please enter some other email'),
   body('bio').trim(),
   errorMiddleware
 ];
@@ -130,11 +128,12 @@ exports.getUserByUsername = [
     .custom((username, { req }) => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exists');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exists'),
   errorMiddleware,
   // extract Authorization header if exists and pass doc of authenticated user
   async (req, res, next) => {
@@ -179,11 +178,12 @@ exports.followUser = [
     .custom(username => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exist');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exist'),
   errorMiddleware
 ];
 
@@ -197,11 +197,12 @@ exports.unfollowUser = [
     .custom(username => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exist');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exist'),
   errorMiddleware
 ];
 
@@ -215,11 +216,12 @@ exports.photoByUsername = [
     .custom(username => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exist');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exist'),
   query('page')
     .trim()
     .not()
@@ -228,7 +230,7 @@ exports.photoByUsername = [
     .toInt()
     .custom(page => {
       if (page < 1) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })
@@ -241,7 +243,7 @@ exports.photoByUsername = [
     .toInt()
     .custom(size => {
       if (size < 1 || size > 100) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })
@@ -259,11 +261,12 @@ exports.getFollowing = [
     .custom(username => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exist');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exist'),
   query('page')
     .trim()
     .not()
@@ -272,7 +275,7 @@ exports.getFollowing = [
     .toInt()
     .custom(page => {
       if (page < 1) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })
@@ -285,7 +288,7 @@ exports.getFollowing = [
     .toInt()
     .custom(size => {
       if (size < 1 || size > 100) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })
@@ -303,11 +306,12 @@ exports.getFollower = [
     .custom(username => {
       return User.exists({ username }).then(exist => {
         if (!exist) {
-          return Promise.reject('user does not exist');
+          throw new Error();
         }
         return true;
       });
-    }),
+    })
+    .withMessage('user does not exist'),
   query('page')
     .trim()
     .not()
@@ -316,7 +320,7 @@ exports.getFollower = [
     .toInt()
     .custom(page => {
       if (page < 1) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })
@@ -329,7 +333,7 @@ exports.getFollower = [
     .toInt()
     .custom(size => {
       if (size < 1 || size > 100) {
-        return Promise.reject();
+        throw new Error();
       }
       return true;
     })

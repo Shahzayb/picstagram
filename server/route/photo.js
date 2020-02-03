@@ -4,6 +4,9 @@ const auth = require('../middleware/authenticate');
 
 const router = express.Router();
 
+// get photo by id
+router.get('/:photoId', controller.getPhoto);
+
 // like photo
 router.patch('/:photoId/like', auth, controller.likePhoto);
 

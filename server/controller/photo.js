@@ -3,6 +3,19 @@ const Like = require('../model/like');
 
 const validators = require('./photo.validator');
 
+exports.getPhoto = [
+  validators.getPhoto,
+  async (req, res) => {
+    try {
+      const photo = await Photo.findOne({ _id: req.params.photoId }).lean();
+      res.json(photo);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];
+
 exports.likePhoto = [
   validators.likePhoto,
   async (req, res) => {
