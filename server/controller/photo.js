@@ -95,3 +95,36 @@ exports.postComment = [
     }
   }
 ];
+
+exports.getComment = [
+  validators.getComment,
+  async (req, res) => {
+    try {
+      const { page, size } = req.query;
+      const skip = (page - 1) * size;
+      const comment = await Comment.aggregate([
+        { $sort: { _id: -1 } },
+        { $skip: skip },
+        { $limit: size },
+        {
+          $lookup: {
+            from: 'users',
+            let: { id: '$userId' },
+            pipeline: [
+              { $match: { $expr: { $eq: ['$_id', '$$id'] } } },
+              { $project: { username: 1, _id: 1, profilePicUrl: 1 } }
+            ],
+            as: 'userDetail'
+          }
+        },
+        { $addFields: { user: { $arrayElemAt: ['$userDetail', 0] } } },
+        { $project: { userDetail: 0, userId: 0, __v: 0 } }
+      ]);
+
+      res.json(comment);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+];

@@ -194,3 +194,82 @@ describe('POST /api/photo/:photoId/comment', () => {
     done();
   });
 });
+
+describe('get /api/photo/:photoId/comment', () => {
+  test('should get comments with pagination', async done => {
+    const user = await User.create({
+      name: 'shahzaib',
+      username: 'shahzaib',
+      password: 'dummy hash password',
+      email: 'imshahzayb@gmail.com',
+      profilePicUrl: 'asfsfs'
+    });
+
+    const photo = await Photo.create({
+      photoUrl: 'dummy url',
+      tags: ['a', 'b'],
+      userId: user._id,
+      title: 'a title'
+    });
+
+    const comment1 = await Comment.create({
+      photoId: photo._id,
+      userId: user._id,
+      comment: 'noiceee'
+    });
+
+    const comment2 = await Comment.create({
+      photoId: photo._id,
+      userId: user._id,
+      comment: 'noiceeeeeee'
+    });
+
+    const res = await req.get(`/api/photo/${photo._id}/comment`).query({
+      page: 1,
+      size: 10
+    });
+
+    expect(res.body[0]._id).toBe(comment2.id);
+    expect(res.body[1]._id).toBe(comment1.id);
+
+    done();
+  });
+
+  test('should get no comments past valid page', async done => {
+    const user = await User.create({
+      name: 'shahzaib',
+      username: 'shahzaib',
+      password: 'dummy hash password',
+      email: 'imshahzayb@gmail.com',
+      profilePicUrl: 'asfsfs'
+    });
+
+    const photo = await Photo.create({
+      photoUrl: 'dummy url',
+      tags: ['a', 'b'],
+      userId: user._id,
+      title: 'a title'
+    });
+
+    const comment1 = await Comment.create({
+      photoId: photo._id,
+      userId: user._id,
+      comment: 'noiceee'
+    });
+
+    const comment2 = await Comment.create({
+      photoId: photo._id,
+      userId: user._id,
+      comment: 'noiceeeeeee'
+    });
+
+    const res = await req.get(`/api/photo/${photo._id}/comment`).query({
+      page: 5,
+      size: 10
+    });
+
+    expect(res.body.length).toBe(0);
+
+    done();
+  });
+});
