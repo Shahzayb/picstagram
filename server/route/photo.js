@@ -20,6 +20,6 @@ router.delete('/:photoId', auth, (req, res) => res.end());
 router.post('/:photoId/comment', auth, controller.postComment);
 
 // get comments of a photo with pagination
-router.get('/:photoId/comment', (req, res) => res.end());
+router.get('/:photoId/comment', controller.getComment);
 
 module.exports = router;
