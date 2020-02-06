@@ -7,6 +7,7 @@ const logger = require('morgan');
 const userRoute = require('./route/user');
 const photoRoute = require('./route/photo');
 const commentRoute = require('./route/comment');
+const timelineRoute = require('./route/timeline');
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(express.json());
 app.use('/api/user', userRoute);
 app.use('/api/photo', photoRoute);
 app.use('/api/comment', commentRoute);
+app.use('/api/timeline', timelineRoute);
 
 module.exports = app;
