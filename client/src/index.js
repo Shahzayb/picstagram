@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
+import history from './lib/history';
 
 import configureStore from './redux/store/configureStore';
 const store = configureStore();
@@ -18,7 +20,7 @@ let render = () => {
   ReactDOM.render(
     <Provider store={store}>
       <CssBaseline />
-      <Router>
+      <Router history={history}>
         <App />
       </Router>
     </Provider>,

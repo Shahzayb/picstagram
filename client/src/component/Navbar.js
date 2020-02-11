@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,12 +11,14 @@ import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import Avatar from '@material-ui/core/Avatar';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import AddIcon from '@material-ui/icons/Add';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
+
+import { logoutUser } from '../redux/action/auth';
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -61,8 +65,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Navbar() {
+function Navbar(props) {
   const classes = useStyles();
+  const { logoutUser, authenticated, user } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
@@ -76,26 +81,18 @@ function Navbar() {
   };
 
   const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
 
   return (
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
-          <Link color="inherit" component={RouterLink} to="/" title="home">
+          <Link
+            underline="none"
+            color="inherit"
+            component={RouterLink}
+            to="/"
+            title="home"
+          >
             <Typography variant="h6" style={{ paddingRight: '1rem' }}>
               Pistagram
             </Typography>
@@ -123,29 +120,73 @@ function Navbar() {
             <AddIcon />
           </Link>
 
-          <IconButton aria-label="show 17 new notifications" color="inherit">
-            <Badge badgeContent={17} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton
-            edge="end"
-            aria-label="account of current user"
-            aria-controls={menuId}
-            aria-haspopup="true"
-            onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <AccountCircle />
-          </IconButton>
-          <Button color="inherit" component={RouterLink} to="/login">
-            Login
-          </Button>
+          {authenticated && (
+            <IconButton aria-label="show 17 new notifications" color="inherit">
+              <Badge badgeContent={17} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          )}
+
+          {authenticated && (
+            <>
+              <IconButton
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <Avatar alt={user.name} src={user.profilePicUrl} />
+              </IconButton>
+
+              <Menu
+                anchorEl={anchorEl}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                id={menuId}
+                keepMounted
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={isMenuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleMenuClose}>
+                  <Link
+                    underline="none"
+                    color="inherit"
+                    component={RouterLink}
+                    to={`/${user.username}`}
+                  >
+                    Profile
+                  </Link>
+                </MenuItem>
+                <MenuItem
+                  onClick={e => {
+                    handleMenuClose(e);
+                    logoutUser();
+                  }}
+                >
+                  Logout
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          {!authenticated && (
+            <Button color="inherit" component={RouterLink} to="/login">
+              Login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
-      {renderMenu}
     </div>
   );
 }
 
-export default Navbar;
+const mapState = ({ auth }) => ({
+  authenticated: auth.isLoggedIn,
+  user: auth.user
+});
+
+const mapDispatch = { logoutUser };
+
+export default connect(mapState, mapDispatch)(Navbar);

@@ -1,9 +1,19 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import Layout from './component/Layout';
 import Navbar from './component/Navbar';
+
 import Home from './page/Home';
+import Login from './page/Login';
+import Register from './page/Register';
+
+import withStartupLogin from './hoc/withStartupLogin';
+import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
+import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
+
+import { ensureLogin } from './redux/action/auth';
 
 function App() {
   return (
@@ -11,20 +21,27 @@ function App() {
       <Navbar />
       <Layout>
         <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/login" component={() => <div>Login</div>} />
-          <Route path="/register" component={() => <div>register</div>} />
+          <AuthenticatedAccessibleRoute exact path="/" component={Home} />
+          <UnauthenticatedAccessibleRoute path="/login" component={Login} />
+
+          <UnauthenticatedAccessibleRoute
+            path="/register"
+            component={Register}
+          />
           <Route path="/photo/:photoId" component={() => <div>photo</div>} />
-          <Route path="/post" component={() => <div>make post</div>} />
+          <AuthenticatedAccessibleRoute
+            path="/post"
+            component={() => <div>make post</div>}
+          />
           <Route
             path="/search/:term"
             component={() => <div>search result</div>}
           />
-          <Route
+          <AuthenticatedAccessibleRoute
             path="/account/edit"
             component={() => <div>edit account</div>}
           />
-          <Route
+          <AuthenticatedAccessibleRoute
             path="/account/change-password"
             component={() => <div>change password</div>}
           />
@@ -39,4 +56,10 @@ function App() {
   );
 }
 
-export default App;
+const AppWithStartupLogin = withStartupLogin(App);
+
+const mapState = state => ({ loading: state.auth.loading });
+
+const mapDispatch = { ensureLogin };
+
+export default connect(mapState, mapDispatch)(AppWithStartupLogin);
