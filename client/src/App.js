@@ -8,6 +8,7 @@ import Navbar from './component/Navbar';
 import Home from './page/Home';
 import Login from './page/Login';
 import Register from './page/Register';
+import Profile from './page/Profile';
 
 import withStartupLogin from './hoc/withStartupLogin';
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
@@ -45,11 +46,7 @@ function App() {
             path="/account/change-password"
             component={() => <div>change password</div>}
           />
-          <Route
-            exact
-            path="/:username"
-            component={() => <div>user profile</div>}
-          />
+          <Route exact path="/:username" component={Profile} />
         </Switch>
       </Layout>
     </>

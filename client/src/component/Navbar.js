@@ -62,6 +62,13 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('md')]: {
       width: 200
     }
+  },
+  spacing: {
+    '& > *:not(:last-child)': {
+      marginRight: theme.spacing(2)
+    },
+    display: 'flex',
+    alignItems: 'center'
   }
 }));
 
@@ -111,71 +118,87 @@ function Navbar(props) {
             />
           </div>
 
-          <Link
-            color="inherit"
-            component={RouterLink}
-            to="/post"
-            title="make post"
-          >
-            <AddIcon />
-          </Link>
-
-          {authenticated && (
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          )}
-
-          {authenticated && (
-            <>
+          <div className={classes.spacing}>
+            {authenticated && (
+              <Link
+                color="inherit"
+                component={RouterLink}
+                to="/post"
+                title="make post"
+              >
+                <AddIcon />
+              </Link>
+            )}
+            {authenticated && (
               <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
+                aria-label="show 17 new notifications"
                 color="inherit"
               >
-                <Avatar alt={user.name} src={user.profilePicUrl} />
+                <Badge badgeContent={17} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
               </IconButton>
+            )}
 
-              <Menu
-                anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                id={menuId}
-                keepMounted
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                open={isMenuOpen}
-                onClose={handleMenuClose}
-              >
-                <MenuItem onClick={handleMenuClose}>
-                  <Link
-                    underline="none"
-                    color="inherit"
-                    component={RouterLink}
-                    to={`/${user.username}`}
-                  >
-                    Profile
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  onClick={e => {
-                    handleMenuClose(e);
-                    logoutUser();
-                  }}
+            {authenticated && (
+              <>
+                <IconButton
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
                 >
-                  Logout
-                </MenuItem>
-              </Menu>
-            </>
-          )}
-          {!authenticated && (
-            <Button color="inherit" component={RouterLink} to="/login">
-              Login
-            </Button>
-          )}
+                  <Avatar alt={user.name} src={user.profilePicUrl} />
+                </IconButton>
+
+                <Menu
+                  anchorEl={anchorEl}
+                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  id={menuId}
+                  keepMounted
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  open={isMenuOpen}
+                  onClose={handleMenuClose}
+                >
+                  <MenuItem onClick={handleMenuClose}>
+                    <Link
+                      underline="none"
+                      color="inherit"
+                      component={RouterLink}
+                      to={`/${user.username}`}
+                    >
+                      Profile
+                    </Link>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={e => {
+                      handleMenuClose(e);
+                      logoutUser();
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
+            {!authenticated && (
+              <>
+                <Button variant="contained" component={RouterLink} to="/login">
+                  Login
+                </Button>
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  component={RouterLink}
+                  to="/register"
+                >
+                  Sign up
+                </Button>
+              </>
+            )}
+          </div>
         </Toolbar>
       </AppBar>
     </div>
