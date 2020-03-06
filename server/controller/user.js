@@ -150,6 +150,8 @@ exports.getUserByUsername = [
         }
       ]);
 
+      user[0].photoCount = await Photo.countDocuments({ userId: user[0]._id });
+
       res.json(user[0]);
     } catch (e) {
       console.log(e);
@@ -224,7 +226,11 @@ exports.photoByUsername = [
     try {
       const { page, size } = req.query;
       const skip = (page - 1) * size;
-      const photos = await Photo.find({})
+      const user = await User.findOne(
+        { username: req.params.username },
+        { _id: 1 }
+      ).lean();
+      const photos = await Photo.find({ userId: user._id })
         .sort({ _id: -1 })
         .skip(skip)
         .limit(size);
