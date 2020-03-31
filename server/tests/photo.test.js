@@ -25,7 +25,8 @@ describe('patch /api/photo/:photoId/like', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const jwtToken = createToken({ username: user.username });
@@ -53,7 +54,8 @@ describe('patch /api/photo/:photoId/like', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
     const like = await Like.create({
       photoId: photo._id,
@@ -85,7 +87,8 @@ describe('patch /api/photo/:photoId/unlike', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
     const like = await Like.create({
       photoId: photo._id,
@@ -115,7 +118,8 @@ describe('patch /api/photo/:photoId/unlike', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const jwtToken = createToken({ username: user.username });
@@ -144,7 +148,8 @@ describe('get /api/photo/:photoId', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const res = await req.get(`/api/photo/${photo._id}`);
@@ -177,7 +182,8 @@ describe('POST /api/photo/:photoId/comment', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const jwtToken = createToken({ username: user.username });
@@ -209,7 +215,8 @@ describe('get /api/photo/:photoId/comment', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const comment1 = await Comment.create({
@@ -248,7 +255,8 @@ describe('get /api/photo/:photoId/comment', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const comment1 = await Comment.create({

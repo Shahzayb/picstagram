@@ -25,6 +25,10 @@ const UnauthenticatedAccessibleRoute = ({ authenticated, ...props }) => {
       // }
 
       /**
+       * alternative solution would be to recieve url of where we are coming from
+       */
+
+      /**
        * lazy solution
        */
       history.replace('/');

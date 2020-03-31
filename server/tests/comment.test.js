@@ -25,7 +25,8 @@ describe('delete /api/comment/:commentId', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const comment = await Comment.create({
@@ -68,7 +69,8 @@ describe('delete /api/comment/:commentId', () => {
       photoUrl: 'dummy url',
       tags: ['a', 'b'],
       userId: user._id,
-      title: 'a title'
+      title: 'a title',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     const comment = await Comment.create({

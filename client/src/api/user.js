@@ -1,7 +1,7 @@
-import { serverBaseUrl, pageSize } from '../config/env';
+import { pageSize } from '../config/env';
 
 export const getMyProfile = async jwtToken => {
-  const url = serverBaseUrl + '/api/user';
+  const url = '/api/user';
   const response = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -16,7 +16,7 @@ export const getMyProfile = async jwtToken => {
 };
 
 export const loginUser = async credentials => {
-  const url = serverBaseUrl + '/api/user/login';
+  const url = '/api/user/login';
 
   const response = await fetch(url, {
     method: 'POST',
@@ -33,7 +33,7 @@ export const loginUser = async credentials => {
 };
 
 export const postUser = async user => {
-  const url = serverBaseUrl + '/api/user';
+  const url = '/api/user';
 
   const response = await fetch(url, {
     method: 'POST',
@@ -50,7 +50,7 @@ export const postUser = async user => {
 };
 
 export const getProfile = async username => {
-  const url = serverBaseUrl + `/api/user/${username}`;
+  const url = `/api/user/${username}`;
   const jwtToken = localStorage.getItem('token') || '';
 
   const response = await fetch(url, {
@@ -68,8 +68,7 @@ export const getProfile = async username => {
 };
 
 export const getUserPhoto = async (username, page) => {
-  const url =
-    serverBaseUrl + `/api/user/${username}/photo?page=${page}&size=${pageSize}`;
+  const url = `/api/user/${username}/photo?page=${page}&size=${pageSize}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -85,9 +84,7 @@ export const getUserPhoto = async (username, page) => {
 };
 
 export const getUserFollower = async (username, page) => {
-  const url =
-    serverBaseUrl +
-    `/api/user/${username}/follower?page=${page}&size=${pageSize}`;
+  const url = `/api/user/${username}/follower?page=${page}&size=${pageSize}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -103,9 +100,7 @@ export const getUserFollower = async (username, page) => {
 };
 
 export const getUserFollowing = async (username, page) => {
-  const url =
-    serverBaseUrl +
-    `/api/user/${username}/following?page=${page}&size=${pageSize}`;
+  const url = `/api/user/${username}/following?page=${page}&size=${pageSize}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -122,7 +117,7 @@ export const getUserFollowing = async (username, page) => {
 
 export const followUser = async username => {
   const jwtToken = localStorage.getItem('token') || '';
-  const url = serverBaseUrl + `/api/user/${username}/follow`;
+  const url = `/api/user/${username}/follow`;
 
   const response = await fetch(url, {
     method: 'PATCH',
@@ -140,7 +135,7 @@ export const followUser = async username => {
 
 export const unfollowUser = async username => {
   const jwtToken = localStorage.getItem('token') || '';
-  const url = serverBaseUrl + `/api/user/${username}/unfollow`;
+  const url = `/api/user/${username}/unfollow`;
 
   const response = await fetch(url, {
     method: 'PATCH',
