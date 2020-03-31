@@ -2,6 +2,7 @@ const express = require('express');
 
 // require middlewares
 const logger = require('morgan');
+const compression = require('compression');
 
 // require routes
 const userRoute = require('./route/user');
@@ -15,6 +16,7 @@ const app = express();
 // mount middlewares
 app.use(logger('combined'));
 app.use(express.json());
+app.use(compression());
 
 // mount routes
 app.use('/api/user', userRoute);
