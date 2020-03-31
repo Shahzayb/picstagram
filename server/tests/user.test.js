@@ -126,7 +126,8 @@ describe('GET /api/user/:username/photo', () => {
     let photo1 = await Photo.create({
       photoUrl: 'url1',
       userId: user._id,
-      title: '1'
+      title: '1',
+      cloudinaryPublicId: 'sdfsdfsd sd'
     });
 
     let res = await req.get(`/api/user/${user.username}/photo?page=1&size=10`);

@@ -41,7 +41,8 @@ describe('get /api/timeline', () => {
         photoUrl: 'dummy url',
         tags: ['a', 'b'],
         userId: user[i]._id,
-        title: `user[${i}] photo 0`
+        title: `user[${i}] photo 0`,
+        cloudinaryPublicId: 'sdfsdfsdhghjghhgjhd' + i
       });
     }
     for (let i = 1; i < 5; i++) {
@@ -49,7 +50,8 @@ describe('get /api/timeline', () => {
         photoUrl: 'dummy url',
         tags: ['a', 'b', 'c'],
         userId: user[i]._id,
-        title: `user[${i}] photo 1`
+        title: `user[${i}] photo 1`,
+        cloudinaryPublicId: 'sdfsdfsd sd' + i
       });
     }
 

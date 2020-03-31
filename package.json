@@ -1,0 +1,32 @@
+{
+  "name": "pistagram",
+  "version": "1.0.0",
+  "description": "A clone of instagram",
+  "private": true,
+  "scripts": {
+    "start": "npm start --prefix server",
+    "client": "npm start --prefix client",
+    "server": "npm run server --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "heroku-prebuild": "cd server && npm install"
+  },
+  "engines": {
+    "node": "13.x",
+    "npm": "6.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shahzayb/pistagram.git"
+  },
+  "keywords": [],
+  "author": "shahzaib sarwar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shahzayb/pistagram/issues"
+  },
+  "homepage": "https://github.com/Shahzayb/pistagram#readme",
+  "devDependencies": {
+    "concurrently": "^5.1.0"
+  }
+}

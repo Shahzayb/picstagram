@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@material-ui/core": "^4.9.1",
     "@material-ui/icons": "^4.9.1",
@@ -12,6 +13,7 @@
     "formik": "^2.1.4",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-dropzone": "^10.2.1",
     "react-infinite-scroller": "^1.2.4",
     "react-redux": "^7.1.3",
     "react-router-dom": "^5.1.2",

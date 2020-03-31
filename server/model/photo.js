@@ -6,6 +6,11 @@ const PhotoSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    cloudinaryPublicId: {
+      type: String,
+      required: true,
+      unique: true
+    },
     tags: [
       {
         type: String
@@ -18,7 +23,6 @@ const PhotoSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      default: '',
       required: true,
       maxlength: 120
     },
