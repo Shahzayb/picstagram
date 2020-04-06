@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 
 import InfiniteScroll from 'react-infinite-scroller';
+import Masonry from 'react-masonry-css';
 
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,54 +13,75 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
+
+import CloudinaryImage from '../component/CloudinaryImage';
 
 import {
   fetchUser,
   followUser,
   unfollowUser,
-  fetchUserPhoto
+  fetchUserPhoto,
 } from '../redux/action/user';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   header: {
     display: 'flex',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   avatar: {
-    width: '100px',
-    height: '100px',
+    width: '60px',
+    height: '60px',
     marginLeft: 'auto',
-    marginRight: theme.spacing(5)
+    marginRight: theme.spacing(5),
   },
   w_30: {
-    width: '30%'
+    width: '30%',
   },
   w_70: {
-    width: '70%'
+    width: '70%',
   },
   w_100: {
-    width: '100%'
+    width: '100%',
   },
   textCenter: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   mt_1: {
-    marginTop: '1rem'
+    marginTop: '1rem',
   },
   bio: {
     maxWidth: '300px',
     margin: '0 auto',
     width: '100%',
-    marginTop: '1rem'
+    marginTop: '1rem',
   },
   d_flex: {
-    display: 'flex'
-  }
+    display: 'flex',
+  },
+  masonryGrid: {
+    display: 'flex',
+    marginLeft: '-1rem' /* gutter size offset */,
+    width: 'auto',
+  },
+  masonryGridColumn: {
+    paddingLeft: '1rem' /* gutter size */,
+    backgroundClip: 'padding-box',
+  },
+  [theme.breakpoints.up('sm')]: {
+    avatar: {
+      width: '100px',
+      height: '100px',
+    },
+  },
 }));
 
-const Profile = props => {
+const breakpointColumnsObj = {
+  default: 3,
+  992: 2,
+  768: 1,
+};
+
+const Profile = (props) => {
   const classes = useStyles();
   const {
     profile,
@@ -69,11 +91,11 @@ const Profile = props => {
     isMine,
     followUser,
     unfollowUser,
-    fetchUserPhoto
+    fetchUserPhoto,
   } = props;
 
   React.useEffect(() => {
-    if (!profile) {
+    if (!profile || !profile.user._id) {
       fetchUser(username);
     }
   }, [profile, username, fetchUser]);
@@ -175,6 +197,11 @@ const Profile = props => {
       <Typography className={classes.mt_1} component="h2" variant="h4">
         Users images
       </Typography>
+      {profile.photo.data.length === 0 && !profile.photo.pagination.hasMore && (
+        <Typography component="p" variant="subtitle1">
+          No photos found
+        </Typography>
+      )}
       <div className={classes.mt_1}>
         <InfiniteScroll
           pageStart={0}
@@ -191,13 +218,18 @@ const Profile = props => {
             </div>
           }
         >
-          <GridList cellHeight={200} className={classes.w_100} cols={3}>
-            {profile.photo.data.map(photo => (
-              <GridListTile key={photo._id} cols={1}>
-                <img src={photo.photoUrl} alt={photo.tags.join(' ')} />
-              </GridListTile>
+          <Masonry
+            breakpointCols={breakpointColumnsObj}
+            className={classes.masonryGrid}
+            columnClassName={classes.masonryGridColumn}
+          >
+            {profile.photo.data.map((photo) => (
+              <CloudinaryImage
+                publicId={photo.cloudinaryPublicId}
+                alt={photo.tags.join(' ')}
+              />
             ))}
-          </GridList>
+          </Masonry>
         </InfiniteScroll>
       </div>
     </main>
@@ -214,7 +246,7 @@ const mapState = ({ profile, auth }, ownProps) => {
     profile: profile[username],
     username,
     authenticated: auth.isLoggedIn,
-    isMine: !!auth.user && auth.user.username === username
+    isMine: !!auth.user && auth.user.username === username,
   };
 };
 

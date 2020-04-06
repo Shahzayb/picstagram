@@ -4,16 +4,16 @@ const userSkeleton = {
   user: {},
   photo: {
     data: [],
-    pagination: { curPage: 0, hasMore: true }
+    pagination: { curPage: 0, hasMore: true },
   },
   following: {
     data: [],
-    pagination: { curPage: 0, hasMore: true }
+    pagination: { curPage: 0, hasMore: true },
   },
   follower: {
     data: [],
-    pagination: { curPage: 0, hasMore: true }
-  }
+    pagination: { curPage: 0, hasMore: true },
+  },
 };
 
 const initialState = {};
@@ -26,8 +26,8 @@ export default (state = initialState, action) => {
         ...state,
         [action.payload.username]: {
           ...user,
-          user: { ...action.payload.user }
-        }
+          user: { ...action.payload.user },
+        },
       };
     }
     case actionTypes.FETCH_USER_PHOTO: {
@@ -38,9 +38,9 @@ export default (state = initialState, action) => {
           ...user,
           photo: {
             data: [...user.photo.data, ...action.payload.photo],
-            pagination: { ...action.payload.pagination }
-          }
-        }
+            pagination: { ...action.payload.pagination },
+          },
+        },
       };
     }
     case actionTypes.FETCH_USER_FOLLOWER: {
@@ -51,9 +51,9 @@ export default (state = initialState, action) => {
           ...user,
           follower: {
             data: [...user.follower.data, ...action.payload.follower],
-            pagination: { ...action.payload.pagination }
-          }
-        }
+            pagination: { ...action.payload.pagination },
+          },
+        },
       };
     }
     case actionTypes.FETCH_USER_FOLLOWING: {
@@ -64,9 +64,9 @@ export default (state = initialState, action) => {
           ...user,
           following: {
             data: [...user.following.data, ...action.payload.following],
-            pagination: { ...action.payload.pagination }
-          }
-        }
+            pagination: { ...action.payload.pagination },
+          },
+        },
       };
     }
     case actionTypes.FOLLOW_USER: {
@@ -81,9 +81,9 @@ export default (state = initialState, action) => {
           ...follower,
           user: {
             ...follower.user,
-            followingCount: follower.user.followingCount + 1
+            followingCount: follower.user.followingCount + 1,
           },
-          following: { ...userSkeleton.following }
+          following: { ...userSkeleton.following },
         };
       }
       if (followee) {
@@ -92,9 +92,9 @@ export default (state = initialState, action) => {
           user: {
             ...followee.user,
             followerCount: followee.user.followerCount + 1,
-            isFollowedByMe: true
+            isFollowedByMe: true,
           },
-          follower: { ...userSkeleton.follower }
+          follower: { ...userSkeleton.follower },
         };
       }
       return updatedState;
@@ -111,9 +111,9 @@ export default (state = initialState, action) => {
           ...follower,
           user: {
             ...follower.user,
-            followingCount: follower.user.followingCount - 1
+            followingCount: follower.user.followingCount - 1,
           },
-          following: { ...userSkeleton.following }
+          following: { ...userSkeleton.following },
         };
       }
       if (followee) {
@@ -122,13 +122,23 @@ export default (state = initialState, action) => {
           user: {
             ...followee.user,
             followerCount: followee.user.followerCount - 1,
-            isFollowedByMe: false
+            isFollowedByMe: false,
           },
-          follower: { ...userSkeleton.follower }
+          follower: { ...userSkeleton.follower },
         };
       }
       return updatedState;
     }
+    case actionTypes.RESET_USER: {
+      const user = userSkeleton;
+      return {
+        ...state,
+        [action.payload.username]: {
+          ...user,
+        },
+      };
+    }
+
     case actionTypes.RESET:
       return initialState;
     default:

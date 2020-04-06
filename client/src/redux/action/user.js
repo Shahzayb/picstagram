@@ -6,25 +6,25 @@ import {
   getUserFollower,
   getUserFollowing,
   followUser as followUserApi,
-  unfollowUser as unfollowUserApi
+  unfollowUser as unfollowUserApi,
 } from '../../api/user';
 
-export const fetchUser = username => async dispatch => {
+export const fetchUser = (username) => async (dispatch) => {
   try {
     const user = await getProfile(username);
     dispatch({
       type: actionTypes.FETCH_USER,
       payload: {
         username,
-        user
-      }
+        user,
+      },
     });
   } catch (e) {
     console.log(e);
   }
 };
 
-export const fetchUserPhoto = (username, page) => async dispatch => {
+export const fetchUserPhoto = (username, page) => async (dispatch) => {
   try {
     const photo = await getUserPhoto(username, page);
     dispatch({
@@ -34,16 +34,16 @@ export const fetchUserPhoto = (username, page) => async dispatch => {
         photo,
         pagination: {
           curPage: page,
-          hasMore: photo.length === pageSize
-        }
-      }
+          hasMore: photo.length === pageSize,
+        },
+      },
     });
   } catch (e) {
     console.log(e);
   }
 };
 
-export const fetchUserFollowing = (username, page) => async dispatch => {
+export const fetchUserFollowing = (username, page) => async (dispatch) => {
   try {
     const following = await getUserFollowing(username, page);
     dispatch({
@@ -53,16 +53,16 @@ export const fetchUserFollowing = (username, page) => async dispatch => {
         following,
         pagination: {
           curPage: page,
-          hasMore: following.length === pageSize
-        }
-      }
+          hasMore: following.length === pageSize,
+        },
+      },
     });
   } catch (e) {
     console.log(e);
   }
 };
 
-export const fetchUserFollower = (username, page) => async dispatch => {
+export const fetchUserFollower = (username, page) => async (dispatch) => {
   try {
     const follower = await getUserFollower(username, page);
     dispatch({
@@ -72,9 +72,9 @@ export const fetchUserFollower = (username, page) => async dispatch => {
         follower,
         pagination: {
           curPage: page,
-          hasMore: follower.length === pageSize
-        }
-      }
+          hasMore: follower.length === pageSize,
+        },
+      },
     });
   } catch (e) {
     console.log(e);
@@ -89,8 +89,8 @@ export const followUser = (username, done) => async (dispatch, getState) => {
       type: actionTypes.FOLLOW_USER,
       payload: {
         follower,
-        followee: username
-      }
+        followee: username,
+      },
     });
   } catch (e) {
     console.log(e);
@@ -108,12 +108,22 @@ export const unfollowUser = (username, done) => async (dispatch, getState) => {
       type: actionTypes.UNFOLLOW_USER,
       payload: {
         follower,
-        followee: username
-      }
+        followee: username,
+      },
     });
   } catch (e) {
     console.log(e);
   } finally {
     done();
   }
+};
+
+export const resetMyProfile = () => (dispatch, getState) => {
+  const username = getState().auth.user.username;
+  dispatch({
+    type: actionTypes.RESET_USER,
+    payload: {
+      username,
+    },
+  });
 };

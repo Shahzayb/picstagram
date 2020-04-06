@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -16,33 +17,34 @@ import Button from '@material-ui/core/Button';
 
 import { logoutUser } from '../redux/action/auth';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   ml_auto: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
   spacing: {
     '& > *:not(:last-child)': {
-      marginRight: theme.spacing(2)
+      marginRight: theme.spacing(2),
     },
     display: 'flex',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
 function Navbar(props) {
   const classes = useStyles();
+  const location = useLocation();
   const { logoutUser, authenticated, user } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
 
-  const handleProfileMenuOpen = event => {
+  const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -73,7 +75,10 @@ function Navbar(props) {
               <Link
                 color="inherit"
                 component={RouterLink}
-                to="/post"
+                to={{
+                  pathname: '/post',
+                  state: { background: location },
+                }}
                 title="make post"
               >
                 <AddAPhotoIcon />
@@ -113,7 +118,7 @@ function Navbar(props) {
                     </Link>
                   </MenuItem>
                   <MenuItem
-                    onClick={e => {
+                    onClick={(e) => {
                       handleMenuClose(e);
                       logoutUser();
                     }}
@@ -147,7 +152,7 @@ function Navbar(props) {
 
 const mapState = ({ auth }) => ({
   authenticated: auth.isLoggedIn,
-  user: auth.user
+  user: auth.user,
 });
 
 const mapDispatch = { logoutUser };
