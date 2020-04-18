@@ -2,7 +2,6 @@ import * as actionTypes from '../action/type';
 import { pageSize } from '../../config/env';
 import {
   getProfile,
-  getUserPhoto,
   getUserFollower,
   getUserFollowing,
   followUser as followUserApi,
@@ -15,7 +14,6 @@ export const fetchUser = (username) => async (dispatch) => {
     dispatch({
       type: actionTypes.FETCH_USER,
       payload: {
-        username,
         user,
       },
     });
@@ -24,26 +22,9 @@ export const fetchUser = (username) => async (dispatch) => {
   }
 };
 
-export const fetchUserPhoto = (username, page) => async (dispatch) => {
-  try {
-    const photo = await getUserPhoto(username, page);
-    dispatch({
-      type: actionTypes.FETCH_USER_PHOTO,
-      payload: {
-        username,
-        photo,
-        pagination: {
-          curPage: page,
-          hasMore: photo.length === pageSize,
-        },
-      },
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const fetchUserFollowing = (username, page) => async (dispatch) => {
+export const fetchUserFollowing = (username, page, done) => async (
+  dispatch
+) => {
   try {
     const following = await getUserFollowing(username, page);
     dispatch({
@@ -51,6 +32,12 @@ export const fetchUserFollowing = (username, page) => async (dispatch) => {
       payload: {
         username,
         following,
+      },
+    });
+    dispatch({
+      type: actionTypes.UPDATE_USER_FOLLOWING_PAGE,
+      payload: {
+        username,
         pagination: {
           curPage: page,
           hasMore: following.length === pageSize,
@@ -59,37 +46,30 @@ export const fetchUserFollowing = (username, page) => async (dispatch) => {
     });
   } catch (e) {
     console.log(e);
+  } finally {
+    done();
   }
 };
 
-export const fetchUserFollower = (username, page) => async (dispatch) => {
+export const fetchUserFollower = (username, page, done) => async (dispatch) => {
   try {
-    const follower = await getUserFollower(username, page);
+    const followers = await getUserFollower(username, page);
+
     dispatch({
       type: actionTypes.FETCH_USER_FOLLOWER,
       payload: {
         username,
-        follower,
-        pagination: {
-          curPage: page,
-          hasMore: follower.length === pageSize,
-        },
+        followers,
       },
     });
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const followUser = (username, done) => async (dispatch, getState) => {
-  try {
-    const follower = getState().auth.user.username;
-    await followUserApi(username);
     dispatch({
-      type: actionTypes.FOLLOW_USER,
+      type: actionTypes.UPDATE_USER_FOLLOWER_PAGE,
       payload: {
-        follower,
-        followee: username,
+        username,
+        pagination: {
+          curPage: page,
+          hasMore: followers.length === pageSize,
+        },
       },
     });
   } catch (e) {
@@ -99,31 +79,39 @@ export const followUser = (username, done) => async (dispatch, getState) => {
   }
 };
 
+export const followUser = (username, done) => async (dispatch, getState) => {
+  try {
+    const follower = getState().auth.user;
+    await followUserApi(username);
+    dispatch({
+      type: actionTypes.FOLLOW_USER,
+      payload: {
+        follower,
+        followeeUsername: username,
+      },
+    });
+    done(null, 'Successfully followed user');
+  } catch (e) {
+    console.log(e);
+    done('Failed to follow user');
+  }
+};
+
 export const unfollowUser = (username, done) => async (dispatch, getState) => {
   try {
-    const follower = getState().auth.user.username;
+    const follower = getState().auth.user;
     await unfollowUserApi(username);
 
     dispatch({
       type: actionTypes.UNFOLLOW_USER,
       payload: {
         follower,
-        followee: username,
+        followeeUsername: username,
       },
     });
+    done(null, 'Successfully unfollowed user');
   } catch (e) {
     console.log(e);
-  } finally {
-    done();
+    done('Failed to unfollow user');
   }
-};
-
-export const resetMyProfile = () => (dispatch, getState) => {
-  const username = getState().auth.user.username;
-  dispatch({
-    type: actionTypes.RESET_USER,
-    payload: {
-      username,
-    },
-  });
 };
