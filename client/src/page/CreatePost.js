@@ -8,7 +8,7 @@ import { Alert } from '@material-ui/lab';
 import ImageDropzone from '../component/ImageDropzone';
 import ImagePreview from '../component/ImagePreview';
 import TextEditor from '../component/TextEditor';
-import { getSignature, uploadImage } from '../api/cloudinary';
+import { getSignature, uploadImage, postTicket } from '../api/cloudinary';
 
 const useStyles = makeStyles((theme) => ({
   flex_bw: {
@@ -78,7 +78,11 @@ const CreatePost = (props) => {
       setUploading(true);
       setUploadFailed(false);
       setUploaded(false);
-      const sig = await getSignature(title);
+      const sig = await getSignature();
+
+      const publicId = `${sig.folder}/${sig.public_id}`;
+
+      await postTicket(publicId, title);
 
       await uploadImage(image, sig);
 
