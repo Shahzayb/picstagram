@@ -10,4 +10,6 @@ router.get('/signature', auth, controller.getSignature);
 
 router.post('/webhook', authCloudinary, controller.postWebhook);
 
+router.post('/ticket', auth, controller.postTicket);
+
 module.exports = router;
