@@ -63,7 +63,7 @@ exports.postWebhook = async (req, res) => {
 
       await photo.save();
       await Ticket.deleteOne({ publicId: body.public_id });
-      res.send();
+      return res.send();
     }
     // else if (body.notification_type === 'moderation') {
     //   if (body.moderation_status === 'approved') {
