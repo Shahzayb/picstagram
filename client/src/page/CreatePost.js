@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, CircularProgress, Typography } from '@material-ui/core';
@@ -10,8 +9,6 @@ import ImageDropzone from '../component/ImageDropzone';
 import ImagePreview from '../component/ImagePreview';
 import TextEditor from '../component/TextEditor';
 import { getSignature, uploadImage } from '../api/cloudinary';
-
-import { resetMyProfile } from '../redux/action/user';
 
 const useStyles = makeStyles((theme) => ({
   flex_bw: {
@@ -68,14 +65,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Post = (props) => {
+const CreatePost = (props) => {
   const classes = useStyles();
   const [image, setImage] = React.useState(null);
   const [title, setTitle] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
   const [isUploadFailed, setUploadFailed] = React.useState(false);
   const [isUploaded, setUploaded] = React.useState(false);
-  const { resetMyProfile } = props;
 
   const uploadHandler = React.useCallback(async () => {
     try {
@@ -92,14 +88,14 @@ const Post = (props) => {
       setUploaded(true);
 
       // now image is uploaded, remove cached images
-      resetMyProfile();
+      // resetMyProfile();
     } catch (e) {
       console.log(e);
       setUploading(false);
       setUploaded(false);
       setUploadFailed(true);
     }
-  }, [image, title, resetMyProfile]);
+  }, [image, title]);
 
   return (
     <main>
@@ -150,6 +146,4 @@ const Post = (props) => {
   );
 };
 
-const mapDispatch = { resetMyProfile };
-
-export default connect(null, mapDispatch)(Post);
+export default CreatePost;

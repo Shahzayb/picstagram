@@ -13,8 +13,8 @@ import Avatar from '@material-ui/core/Avatar';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
 
+import ResponsiveButton from './ResponsiveButton';
 import { logoutUser } from '../redux/action/auth';
 
 const useStyles = makeStyles((theme) => ({
@@ -81,7 +81,7 @@ function Navbar(props) {
                 }}
                 title="make post"
               >
-                <AddAPhotoIcon />
+                <AddAPhotoIcon fontSize="large" />
               </Link>
             )}
 
@@ -112,7 +112,7 @@ function Navbar(props) {
                       underline="none"
                       color="inherit"
                       component={RouterLink}
-                      to={`/${user.username}`}
+                      to={`/@${user.username}`}
                     >
                       Profile
                     </Link>
@@ -130,17 +130,21 @@ function Navbar(props) {
             )}
             {!authenticated && (
               <>
-                <Button variant="contained" component={RouterLink} to="/login">
+                <ResponsiveButton
+                  variant="contained"
+                  component={RouterLink}
+                  to="/login"
+                >
                   Login
-                </Button>
-                <Button
+                </ResponsiveButton>
+                <ResponsiveButton
                   color="inherit"
                   variant="outlined"
                   component={RouterLink}
                   to="/register"
                 >
                   Sign up
-                </Button>
+                </ResponsiveButton>
               </>
             )}
           </div>

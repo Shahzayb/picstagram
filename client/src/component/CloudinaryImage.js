@@ -8,10 +8,7 @@ const CloudinaryImage = (props) => {
       cloudName={process.env.REACT_APP_CLOUDINARY_CLOUD_NAME}
       publicId={props.publicId}
       responsive
-      responsiveUseBreakpoints="true"
-      client_hints="true"
       alt={props.alt}
-      flags="progressive"
       crop="scale"
       width="auto"
       dpr="auto"

@@ -1,29 +1,30 @@
 import { pageSize } from '../config/env';
 
-export const getMyProfile = async jwtToken => {
+export const getMyProfile = async (jwtToken) => {
   const url = '/api/user';
-  const response = await fetch(url, {
+  return fetch(url, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwtToken}`
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  }).then((response) => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      return Promise.reject(response);
     }
   });
-  if (response.ok) {
-    return await response.json();
-  } else {
-    Promise.reject(response);
-  }
 };
 
-export const loginUser = async credentials => {
+export const loginUser = async (credentials) => {
   const url = '/api/user/login';
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(credentials)
+    body: JSON.stringify(credentials),
   });
   if (response.ok) {
     return response.json();
@@ -32,15 +33,15 @@ export const loginUser = async credentials => {
   }
 };
 
-export const postUser = async user => {
+export const postUser = async (user) => {
   const url = '/api/user';
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
   });
   if (response.ok) {
     return response.json();
@@ -49,7 +50,7 @@ export const postUser = async user => {
   }
 };
 
-export const getProfile = async username => {
+export const getProfile = async (username) => {
   const url = `/api/user/${username}`;
   const jwtToken = localStorage.getItem('token') || '';
 
@@ -57,8 +58,8 @@ export const getProfile = async username => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwtToken}`
-    }
+      Authorization: `Bearer ${jwtToken}`,
+    },
   });
   if (response.ok) {
     return response.json();
@@ -73,8 +74,8 @@ export const getUserPhoto = async (username, page) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
   if (response.ok) {
     return response.json();
@@ -89,8 +90,8 @@ export const getUserFollower = async (username, page) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
   if (response.ok) {
     return response.json();
@@ -105,8 +106,8 @@ export const getUserFollowing = async (username, page) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
   if (response.ok) {
     return response.json();
@@ -115,7 +116,7 @@ export const getUserFollowing = async (username, page) => {
   }
 };
 
-export const followUser = async username => {
+export const followUser = async (username) => {
   const jwtToken = localStorage.getItem('token') || '';
   const url = `/api/user/${username}/follow`;
 
@@ -123,8 +124,8 @@ export const followUser = async username => {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwtToken}`
-    }
+      Authorization: `Bearer ${jwtToken}`,
+    },
   });
   if (response.ok) {
     return Promise.resolve();
@@ -133,7 +134,7 @@ export const followUser = async username => {
   }
 };
 
-export const unfollowUser = async username => {
+export const unfollowUser = async (username) => {
   const jwtToken = localStorage.getItem('token') || '';
   const url = `/api/user/${username}/unfollow`;
 
@@ -141,8 +142,8 @@ export const unfollowUser = async username => {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${jwtToken}`
-    }
+      Authorization: `Bearer ${jwtToken}`,
+    },
   });
   if (response.ok) {
     return Promise.resolve();

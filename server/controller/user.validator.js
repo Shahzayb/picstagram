@@ -10,9 +10,9 @@ exports.postUser = [
       .not()
       .isEmpty()
       .withMessage('username should not be empty')
-      .customSanitizer(username => username.toLowerCase())
-      .custom(username => {
-        return User.exists({ username }).then(exist => {
+      .customSanitizer((username) => username.toLowerCase())
+      .custom((username) => {
+        return User.exists({ username }).then((exist) => {
           if (exist) {
             throw new Error();
           }
@@ -25,17 +25,17 @@ exports.postUser = [
       .not()
       .isEmpty()
       .withMessage('name should not be empty')
-      .customSanitizer(name => name.toLowerCase()),
+      .customSanitizer((name) => name.toLowerCase()),
     body('email')
       .trim()
       .not()
       .isEmpty()
       .withMessage('please enter email address')
-      .customSanitizer(email => email.toLowerCase())
+      .customSanitizer((email) => email.toLowerCase())
       .isEmail()
       .withMessage('please enter valid email')
       .custom((email /*, { req }*/) => {
-        return User.exists({ email }).then(exist => {
+        return User.exists({ email }).then((exist) => {
           if (exist) {
             throw new Error();
           }
@@ -51,9 +51,9 @@ exports.postUser = [
       .isEmpty()
       .withMessage('please enter password')
       .isLength({ min: 8 })
-      .withMessage('please enter password with at least 8 character')
+      .withMessage('please enter password with at least 8 character'),
   ],
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.loginUser = [
@@ -62,13 +62,9 @@ exports.loginUser = [
     .not()
     .isEmpty()
     .withMessage('Please enter username')
-    .customSanitizer(username => username.toLowerCase()),
-  body('password')
-    .trim()
-    .not()
-    .isEmpty()
-    .withMessage('please enter password'),
-  errorMiddleware
+    .customSanitizer((username) => username.toLowerCase()),
+  body('password').trim().not().isEmpty().withMessage('please enter password'),
+  errorMiddleware,
 ];
 
 exports.updateAccount = [
@@ -77,9 +73,9 @@ exports.updateAccount = [
     .not()
     .isEmpty()
     .withMessage('Please enter username')
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .custom((username, { req }) => {
-      return User.exists({ username }).then(exist => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           return Promise.resolve(true);
         } else if (exist && username === req.user.username) {
@@ -94,17 +90,17 @@ exports.updateAccount = [
     .not()
     .isEmpty()
     .withMessage('Please enter name')
-    .customSanitizer(name => name.toLowerCase()),
+    .customSanitizer((name) => name.toLowerCase()),
   body('email')
     .trim()
     .not()
     .isEmpty()
     .withMessage('Please enter email')
-    .customSanitizer(email => email.toLowerCase())
+    .customSanitizer((email) => email.toLowerCase())
     .isEmail()
     .withMessage('please enter valid email')
     .custom((email, { req }) => {
-      return User.exists({ email }).then(exist => {
+      return User.exists({ email }).then((exist) => {
         if (!exist) {
           return Promise.resolve(true);
         } else if (exist && email === req.user.email) {
@@ -115,7 +111,7 @@ exports.updateAccount = [
     })
     .withMessage('email is already taken. Please enter some other email'),
   body('bio').trim(),
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.getUserByUsername = [
@@ -123,10 +119,10 @@ exports.getUserByUsername = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
     .custom((username, { req }) => {
-      return User.exists({ username }).then(exist => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -138,10 +134,8 @@ exports.getUserByUsername = [
   // extract Authorization header if exists and pass doc of authenticated user
   async (req, res, next) => {
     try {
-      if (!req.header('Authorization')) {
-        return;
-      }
       const token = req.header('Authorization').replace('Bearer ', '');
+
       const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
 
       if (req.params.username === verifiedToken.username) {
@@ -150,7 +144,7 @@ exports.getUserByUsername = [
 
       const user = await User.findOne(
         {
-          username: verifiedToken.username
+          username: verifiedToken.username,
         },
         { username: 1 }
       ).lean();
@@ -161,11 +155,11 @@ exports.getUserByUsername = [
 
       req.authUser = user;
     } catch (e) {
-      console.log(e);
+      console.log('invalid token', e);
     } finally {
       next();
     }
-  }
+  },
 ];
 
 exports.followUser = [
@@ -173,10 +167,10 @@ exports.followUser = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
-    .custom(username => {
-      return User.exists({ username }).then(exist => {
+    .custom((username) => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -184,7 +178,7 @@ exports.followUser = [
       });
     })
     .withMessage('user does not exist'),
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.unfollowUser = [
@@ -192,10 +186,10 @@ exports.unfollowUser = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
-    .custom(username => {
-      return User.exists({ username }).then(exist => {
+    .custom((username) => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -203,7 +197,7 @@ exports.unfollowUser = [
       });
     })
     .withMessage('user does not exist'),
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.photoByUsername = [
@@ -211,10 +205,10 @@ exports.photoByUsername = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
-    .custom(username => {
-      return User.exists({ username }).then(exist => {
+    .custom((username) => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -228,7 +222,7 @@ exports.photoByUsername = [
     .isEmpty()
     .withMessage('page number is required')
     .toInt()
-    .custom(page => {
+    .custom((page) => {
       if (page < 1) {
         throw new Error();
       }
@@ -241,14 +235,14 @@ exports.photoByUsername = [
     .isEmpty()
     .withMessage('size number is required')
     .toInt()
-    .custom(size => {
+    .custom((size) => {
       if (size < 1 || size > 100) {
         throw new Error();
       }
       return true;
     })
     .withMessage('size should be a number and between 1 and 100'),
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.getFollowing = [
@@ -256,10 +250,10 @@ exports.getFollowing = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
-    .custom(username => {
-      return User.exists({ username }).then(exist => {
+    .custom((username) => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -273,7 +267,7 @@ exports.getFollowing = [
     .isEmpty()
     .withMessage('page number is required')
     .toInt()
-    .custom(page => {
+    .custom((page) => {
       if (page < 1) {
         throw new Error();
       }
@@ -286,14 +280,14 @@ exports.getFollowing = [
     .isEmpty()
     .withMessage('size number is required')
     .toInt()
-    .custom(size => {
+    .custom((size) => {
       if (size < 1 || size > 100) {
         throw new Error();
       }
       return true;
     })
     .withMessage('size should be a number and between 1 and 100'),
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.getFollower = [
@@ -301,10 +295,10 @@ exports.getFollower = [
     .trim()
     .not()
     .isEmpty()
-    .customSanitizer(username => username.toLowerCase())
+    .customSanitizer((username) => username.toLowerCase())
     .withMessage('please enter username')
-    .custom(username => {
-      return User.exists({ username }).then(exist => {
+    .custom((username) => {
+      return User.exists({ username }).then((exist) => {
         if (!exist) {
           throw new Error();
         }
@@ -318,7 +312,7 @@ exports.getFollower = [
     .isEmpty()
     .withMessage('page number is required')
     .toInt()
-    .custom(page => {
+    .custom((page) => {
       if (page < 1) {
         throw new Error();
       }
@@ -331,12 +325,12 @@ exports.getFollower = [
     .isEmpty()
     .withMessage('size number is required')
     .toInt()
-    .custom(size => {
+    .custom((size) => {
       if (size < 1 || size > 100) {
         throw new Error();
       }
       return true;
     })
     .withMessage('size should be a number and between 1 and 100'),
-  errorMiddleware
+  errorMiddleware,
 ];
