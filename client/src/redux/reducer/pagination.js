@@ -83,6 +83,12 @@ export default (state = initialState, action) => {
         ...initialState,
       };
     }
+    case actionTypes.RESET_TIMELINE_PAGE: {
+      return {
+        ...state,
+        timeline: initialPage,
+      };
+    }
     default:
       return state;
   }

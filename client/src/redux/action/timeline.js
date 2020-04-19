@@ -29,3 +29,12 @@ export const fetchTimeline = (page, done) => async (dispatch, getState) => {
     done();
   }
 };
+
+export const resetTimeline = () => async (dispatch) => {
+  dispatch({
+    type: actionTypes.RESET_TIMELINE,
+  });
+  dispatch({
+    type: actionTypes.RESET_TIMELINE_PAGE,
+  });
+};

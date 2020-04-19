@@ -7,12 +7,19 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 import Button from './ResponsiveButton';
 import { followUser, unfollowUser } from '../redux/action/user';
+import { resetTimeline } from '../redux/action/timeline';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function FollowToggle({ username, followed, followUser, unfollowUser }) {
+function FollowToggle({
+  username,
+  followed,
+  followUser,
+  unfollowUser,
+  resetTimeline,
+}) {
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState('');
   const [error, setError] = React.useState('');
@@ -47,6 +54,8 @@ function FollowToggle({ username, followed, followUser, unfollowUser }) {
     } else {
       followUser(username, done);
     }
+    // reset timeline + pagination
+    resetTimeline();
   };
 
   return (
@@ -110,6 +119,6 @@ function FollowToggle({ username, followed, followUser, unfollowUser }) {
   );
 }
 
-const mapDispatch = { followUser, unfollowUser };
+const mapDispatch = { followUser, unfollowUser, resetTimeline };
 
 export default connect(null, mapDispatch)(FollowToggle);
