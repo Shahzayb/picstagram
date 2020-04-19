@@ -13,7 +13,7 @@ exports.postUser = [
       const [password, profilePicUrl, token] = await Promise.all([
         bcrypt.hash(req.body.password, 8),
         gravatar.url(req.body.email),
-        createToken({ username: req.body.username })
+        createToken({ username: req.body.username }),
       ]);
 
       const user = await User.create({
@@ -21,23 +21,24 @@ exports.postUser = [
         name: req.body.name,
         email: req.body.email,
         password,
-        profilePicUrl
+        profilePicUrl,
       });
 
       res.status(201).json({
         user: {
+          _id: user._id,
           username: user.username,
           name: user.name,
           email: user.email,
-          profilePicUrl: user.profilePicUrl
+          profilePicUrl: user.profilePicUrl,
         },
-        token
+        token,
       });
     } catch (e) {
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.getMyProfile = (req, res) => {
@@ -48,7 +49,7 @@ exports.getMyProfile = (req, res) => {
       name: req.user.name,
       email: req.user.email,
       bio: req.user.bio,
-      profilePicUrl: req.user.profilePicUrl
+      profilePicUrl: req.user.profilePicUrl,
     });
   } catch (e) {
     console.log(e);
@@ -63,7 +64,7 @@ exports.loginUser = [
       const { username, password } = req.body;
 
       const user = await User.findOne({ username })
-        .select('+username +name +email +profilePicUrl')
+        .select('+_id +username +name +email +profilePicUrl')
         .lean();
 
       if (!user) {
@@ -80,18 +81,19 @@ exports.loginUser = [
 
       res.json({
         user: {
+          _id: user._id,
           username: user.username,
           name: user.name,
           email: user.email,
-          profilePicUrl: user.profilePicUrl
+          profilePicUrl: user.profilePicUrl,
         },
-        token
+        token,
       });
     } catch (e) {
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.updateAccount = [
@@ -104,7 +106,7 @@ exports.updateAccount = [
           username: req.body.username,
           name: req.body.name,
           email: req.body.email,
-          bio: req.body.bio
+          bio: req.body.bio,
         },
         { new: true }
       ).lean();
@@ -113,18 +115,19 @@ exports.updateAccount = [
 
       res.json({
         user: {
+          _id: user._id,
           username: user.username,
           name: user.name,
           email: user.email,
           profilePicUrl: user.profilePicUrl,
-          bio: user.bio
+          bio: user.bio,
         },
-        token
+        token,
       });
     } catch (e) {
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.getUserByUsername = [
@@ -138,7 +141,7 @@ exports.getUserByUsername = [
         username: 1,
         name: 1,
         bio: 1,
-        profilePicUrl: 1
+        profilePicUrl: 1,
       };
       if (req.authUser) {
         $project.isFollowedByMe = { $in: [req.authUser._id, '$follower'] };
@@ -146,8 +149,8 @@ exports.getUserByUsername = [
       const user = await User.aggregate([
         { $match: { username: req.params.username } },
         {
-          $project
-        }
+          $project,
+        },
       ]);
 
       user[0].photoCount = await Photo.countDocuments({ userId: user[0]._id });
@@ -157,7 +160,7 @@ exports.getUserByUsername = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.followUser = [
@@ -178,7 +181,7 @@ exports.followUser = [
       await User.updateOne(
         { _id: req.user._id },
         {
-          $addToSet: { following: user._id }
+          $addToSet: { following: user._id },
         }
       ).lean();
 
@@ -187,7 +190,7 @@ exports.followUser = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.unfollowUser = [
@@ -208,7 +211,7 @@ exports.unfollowUser = [
       await User.updateOne(
         { _id: req.user._id },
         {
-          $pull: { following: user._id }
+          $pull: { following: user._id },
         }
       ).lean();
 
@@ -217,7 +220,7 @@ exports.unfollowUser = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.photoByUsername = [
@@ -239,7 +242,7 @@ exports.photoByUsername = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.getFollowing = [
@@ -261,17 +264,20 @@ exports.getFollowing = [
             from: 'users',
             localField: 'following',
             foreignField: '_id',
-            as: 'followingInfo'
-          }
+            as: 'followingInfo',
+          },
         },
         {
           $replaceRoot: {
             newRoot: {
-              $mergeObjects: [{ $arrayElemAt: ['$followingInfo', 0] }, '$$ROOT']
-            }
-          }
+              $mergeObjects: [
+                { $arrayElemAt: ['$followingInfo', 0] },
+                '$$ROOT',
+              ],
+            },
+          },
         },
-        { $project: { name: 1, username: 1, profilePicUrl: 1 } }
+        { $project: { name: 1, username: 1, profilePicUrl: 1 } },
       ]);
 
       res.json(following);
@@ -279,7 +285,7 @@ exports.getFollowing = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.getFollower = [
@@ -301,17 +307,17 @@ exports.getFollower = [
             from: 'users',
             localField: 'follower',
             foreignField: '_id',
-            as: 'followerInfo'
-          }
+            as: 'followerInfo',
+          },
         },
         {
           $replaceRoot: {
             newRoot: {
-              $mergeObjects: [{ $arrayElemAt: ['$followerInfo', 0] }, '$$ROOT']
-            }
-          }
+              $mergeObjects: [{ $arrayElemAt: ['$followerInfo', 0] }, '$$ROOT'],
+            },
+          },
         },
-        { $project: { name: 1, username: 1, profilePicUrl: 1 } }
+        { $project: { name: 1, username: 1, profilePicUrl: 1 } },
       ]);
 
       res.json(follower);
@@ -319,5 +325,5 @@ exports.getFollower = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];

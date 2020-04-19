@@ -1,14 +1,7 @@
 import React from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
-import {
-  Paper,
-  Link,
-  Avatar,
-  makeStyles,
-  ButtonBase,
-  Typography,
-} from '@material-ui/core';
+import { Paper, Link, Avatar, makeStyles, Typography } from '@material-ui/core';
 
 import CloudinaryImage from './CloudinaryImage';
 import CreateComment from './CreateComment';

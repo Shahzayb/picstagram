@@ -163,6 +163,10 @@ export default function entitiesReducer(state = initialState, action) {
       photo.likeCount -= 1;
       return session.state;
     }
+    case actionTypes.RESET_ENTITIES: {
+      const session = orm.session(initialState);
+      return session.state;
+    }
     default:
       return state;
   }

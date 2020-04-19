@@ -78,6 +78,11 @@ export default (state = initialState, action) => {
         },
       };
     }
+    case actionTypes.RESET_PAGINATION: {
+      return {
+        ...initialState,
+      };
+    }
     default:
       return state;
   }
