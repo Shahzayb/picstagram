@@ -22,28 +22,28 @@ import Copyright from '../component/Copyright';
 import { loginUser as loginUserApi } from '../api/user';
 import { loginUser as loginUserAction } from '../redux/action/auth';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   alertContainer: {
     width: '100%',
-    margin: theme.spacing(2, 0, 2, 0)
-  }
+    margin: theme.spacing(2, 0, 2, 0),
+  },
 }));
 
 function Login(props) {
@@ -55,7 +55,7 @@ function Login(props) {
     initialValues: { username: '', password: '' },
     validationSchema: object().shape({
       username: string().required('required'),
-      password: string().required('required')
+      password: string().required('required'),
     }),
     onSubmit: (values, formik) => {
       setAlertOpen(false);
@@ -67,7 +67,7 @@ function Login(props) {
           setAlertOpen(true);
           formik.setSubmitting(false);
         });
-    }
+    },
   });
 
   return (
@@ -138,7 +138,8 @@ function Login(props) {
           >
             {formik.isSubmitting ? (
               <>
-                {'Signing in...'} <CircularProgress size={16} />
+                {'Signing in...'}{' '}
+                <CircularProgress style={{ marginLeft: '1rem' }} size={16} />
               </>
             ) : (
               'Sign In'

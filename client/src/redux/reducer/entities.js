@@ -92,6 +92,20 @@ export default function entitiesReducer(state = initialState, action) {
 
       return session.state;
     }
+    case actionTypes.FETCH_PHOTO_BY_ID: {
+      const { photo } = action.payload;
+      const session = orm.session(state);
+      const { User, Photo } = session;
+
+      const photoUser = User.upsert({ ...photo.user, id: photo.user._id });
+      Photo.upsert({
+        ...photo,
+        id: photo._id,
+        user: photoUser,
+      });
+
+      return session.state;
+    }
     case actionTypes.FETCH_USER_FOLLOWER: {
       const { username, followers } = action.payload;
       const session = orm.session(state);

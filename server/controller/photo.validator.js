@@ -1,13 +1,15 @@
 const { param, body, query } = require('express-validator');
 const { errorMiddleware } = require('../util/validator');
 const Photo = require('../model/photo');
+const User = require('../model/user');
+const jwt = require('jsonwebtoken');
 
 const photoIdParamValidator = param('photoId')
   .trim()
   .not()
   .isEmpty()
-  .custom(_id => {
-    return Photo.exists({ _id }).then(exists => {
+  .custom((_id) => {
+    return Photo.exists({ _id }).then((exists) => {
       if (!exists) {
         throw new Error();
       }
@@ -26,7 +28,7 @@ const pageQueryValidator = query('page')
   .isEmpty()
   .withMessage('page number is required')
   .toInt()
-  .custom(page => {
+  .custom((page) => {
     if (page < 1) {
       throw new Error();
     }
@@ -40,7 +42,7 @@ const sizeQueryValidator = query('size')
   .isEmpty()
   .withMessage('size number is required')
   .toInt()
-  .custom(size => {
+  .custom((size) => {
     if (size < 1 || size > 100) {
       throw new Error();
     }
@@ -48,7 +50,38 @@ const sizeQueryValidator = query('size')
   })
   .withMessage('size should be a number and between 1 and 100');
 
-exports.getPhoto = [photoIdParamValidator, errorMiddleware];
+exports.getPhoto = [
+  photoIdParamValidator,
+  errorMiddleware, // extract Authorization header if exists and pass doc of authenticated user
+  async (req, res, next) => {
+    try {
+      const token = req.header('Authorization').replace('Bearer ', '');
+
+      const verifiedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (req.params.username === verifiedToken.username) {
+        return;
+      }
+
+      const user = await User.findOne(
+        {
+          username: verifiedToken.username,
+        },
+        { username: 1 }
+      ).lean();
+
+      if (!user) {
+        return;
+      }
+
+      req.authUser = user;
+    } catch (e) {
+      console.log('invalid token', e);
+    } finally {
+      next();
+    }
+  },
+];
 
 exports.likePhoto = [photoIdParamValidator, errorMiddleware];
 
@@ -57,12 +90,12 @@ exports.unlikePhoto = [photoIdParamValidator, errorMiddleware];
 exports.postComment = [
   photoIdParamValidator,
   commentBodyValidator,
-  errorMiddleware
+  errorMiddleware,
 ];
 
 exports.getComment = [
   photoIdParamValidator,
   pageQueryValidator,
   sizeQueryValidator,
-  errorMiddleware
+  errorMiddleware,
 ];

@@ -12,12 +12,11 @@ import Login from './page/Login';
 import Register from './page/Register';
 import Profile from './page/Profile';
 import CreatePost from './page/CreatePost';
+import Post from './page/Post';
 
 import withStartupLogin from './hoc/withStartupLogin';
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
 import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
-
-import { isSmallScreen } from './util/screen';
 
 import { ensureLogin } from './redux/action/auth';
 
@@ -30,14 +29,13 @@ function App() {
   // check if background screen path and foreground screen (modal) path are different
   let differentPaths = background && background.pathname !== location.pathname;
 
-  // only show screen inside modal if window width is not small
-  let insideModal = differentPaths && background && !isSmallScreen();
+  background = differentPaths && background;
 
   return (
     <>
       <Navbar />
       <Layout>
-        <Switch location={(insideModal && background) || location}>
+        <Switch location={background || location}>
           <AuthenticatedAccessibleRoute exact path="/">
             <Home />
           </AuthenticatedAccessibleRoute>
@@ -65,18 +63,16 @@ function App() {
           </AuthenticatedAccessibleRoute>
           <Route path="/@:username" component={Profile} />
 
-          <Route exact path="/photo/:photoId/comments">
-            <Comments />
-          </Route>
+          <Route exact path="/p/:photoId/" component={Post} />
         </Switch>
-        {insideModal ? (
+        {!!background ? (
           <>
             <AuthenticatedAccessibleRoute exact path="/post">
               <Modal title="Make a post">
                 <CreatePost insideModal />
               </Modal>
             </AuthenticatedAccessibleRoute>
-            <Route exact path="/photo/:photoId/comments">
+            <Route exact path="/p/:photoId/comments">
               <Comments />
             </Route>
           </>

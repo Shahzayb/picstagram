@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   commentContainer: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'start',
   },
   grow: {
     flex: 1,
@@ -39,7 +39,10 @@ const initialValues = {
 };
 
 const validationSchema = yupObject().shape({
-  comment: yupString().required('required').max(120, 'comment is too long'),
+  comment: yupString()
+    .trim()
+    .required('required')
+    .max(120, 'comment is too long'),
 });
 
 export default function CreateComment({ photoId }) {
@@ -114,8 +117,9 @@ export default function CreateComment({ photoId }) {
           name="comment"
           size="small"
           {...formik.getFieldProps('comment')}
-          error={formik.touched.comment && !!formik.errors.comment}
+          // error={formik.touched.comment && !!formik.errors.comment}
           helperText={formik.touched.comment && formik.errors.comment}
+          onBlur={() => {}}
         />
         <Button
           disabled={formik.isSubmitting}

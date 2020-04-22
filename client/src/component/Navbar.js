@@ -16,6 +16,7 @@ import Link from '@material-ui/core/Link';
 
 import ResponsiveButton from './ResponsiveButton';
 import { logoutUser } from '../redux/action/auth';
+import { isSmallScreen } from '../util/screen';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -41,6 +42,8 @@ function Navbar(props) {
   const location = useLocation();
   const { logoutUser, authenticated, user } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const insideModal = !isSmallScreen();
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -77,7 +80,7 @@ function Navbar(props) {
                 component={RouterLink}
                 to={{
                   pathname: '/post',
-                  state: { background: location },
+                  state: { background: insideModal ? location : null },
                 }}
                 title="make post"
               >

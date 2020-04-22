@@ -41,6 +41,9 @@ const useStyles = makeStyles((theme) => ({
   fontSize16: {
     fontSize: '16px',
   },
+  fontSize14: {
+    fontSize: '14px',
+  },
   commentContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -51,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TimelinePost({ photo }) {
+function Post({ photo }) {
   const classes = useStyles();
   const location = useLocation();
 
@@ -70,7 +73,9 @@ function TimelinePost({ photo }) {
             alt={photo.user.name}
             src={photo.user.profilePicUrl}
           />
-          <span>{photo.user.username}</span>
+          <Typography className={classes.fontSize16} variant="h6">
+            {photo.user.username}
+          </Typography>
         </Link>
       </header>
       <CloudinaryImage
@@ -107,14 +112,14 @@ function TimelinePost({ photo }) {
           <Link
             component={RouterLink}
             to={{
-              pathname: `/photo/${photo._id}/comments`,
+              pathname: `/p/${photo._id}/comments`,
               state: { background: location },
             }}
             underline="none"
             color="inherit"
           >
             <Typography
-              className={classes.fontSize16}
+              className={classes.fontSize14}
               component="span"
               variant="h6"
               color="textSecondary"
@@ -129,4 +134,4 @@ function TimelinePost({ photo }) {
   );
 }
 
-export default TimelinePost;
+export default Post;

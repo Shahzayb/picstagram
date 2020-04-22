@@ -1,3 +1,4 @@
+const ObjectId = require('mongoose').Types.ObjectId;
 const Photo = require('../model/photo');
 const Like = require('../model/like');
 const Comment = require('../model/comment');
@@ -8,13 +9,73 @@ exports.getPhoto = [
   validators.getPhoto,
   async (req, res) => {
     try {
-      const photo = await Photo.findOne({ _id: req.params.photoId }).lean();
-      res.json(photo);
+      const photoId = ObjectId(req.params.photoId);
+
+      const pipeline = [
+        { $match: { _id: photoId } },
+        {
+          $lookup: {
+            from: 'users',
+            let: { id: '$userId' },
+            pipeline: [
+              { $match: { $expr: { $eq: ['$_id', '$$id'] } } },
+              { $project: { username: 1, _id: 1, profilePicUrl: 1 } },
+            ],
+            as: 'userDetail',
+          },
+        },
+        { $addFields: { user: { $arrayElemAt: ['$userDetail', 0] } } },
+        { $project: { userDetail: 0, userId: 0, like: 0 } },
+      ];
+
+      const user = req.authUser;
+      if (user) {
+        pipeline.splice(
+          3,
+          0,
+          {
+            $lookup: {
+              from: 'likes',
+              let: { userId: user._id, photoId: '$_id' },
+              pipeline: [
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ['$userId', '$$userId'] },
+                        { $eq: ['$photoId', '$$photoId'] },
+                      ],
+                    },
+                  },
+                },
+                { $project: { _id: 1 } },
+              ],
+              as: 'like',
+            },
+          },
+          {
+            $addFields: {
+              isLikedByMe: {
+                $cond: {
+                  if: {
+                    $eq: [{ $size: '$like' }, 0],
+                  },
+                  then: false,
+                  else: true,
+                },
+              },
+            },
+          }
+        );
+      }
+      const photo = await Photo.aggregate(pipeline);
+
+      res.json(photo[0]);
     } catch (e) {
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.likePhoto = [
@@ -24,7 +85,7 @@ exports.likePhoto = [
       // check if user already liked the photo
       const liked = await Like.exists({
         photoId: req.params.photoId,
-        userId: req.user._id
+        userId: req.user._id,
       });
 
       if (liked) {
@@ -33,12 +94,12 @@ exports.likePhoto = [
 
       const like = await Like.create({
         photoId: req.params.photoId,
-        userId: req.user._id
+        userId: req.user._id,
       });
       const photo = await Photo.findByIdAndUpdate(
         req.params.photoId,
         {
-          $inc: { likeCount: 1 }
+          $inc: { likeCount: 1 },
         },
         { new: true }
       ).lean();
@@ -48,7 +109,7 @@ exports.likePhoto = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.unlikePhoto = [
@@ -57,7 +118,7 @@ exports.unlikePhoto = [
     try {
       const like = await Like.deleteOne({
         photoId: req.params.photoId,
-        userId: req.user._id
+        userId: req.user._id,
       });
 
       if (!like.deletedCount) {
@@ -67,7 +128,7 @@ exports.unlikePhoto = [
       await Photo.updateOne(
         { _id: req.params.photoId },
         {
-          $inc: { likeCount: -1 }
+          $inc: { likeCount: -1 },
         }
       ).lean();
 
@@ -76,7 +137,7 @@ exports.unlikePhoto = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.postComment = [
@@ -86,14 +147,14 @@ exports.postComment = [
       const comment = await Comment.create({
         userId: req.user._id,
         photoId: req.params.photoId,
-        comment: req.body.comment
+        comment: req.body.comment,
       });
       res.json(comment);
     } catch (e) {
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];
 
 exports.getComment = [
@@ -112,13 +173,13 @@ exports.getComment = [
             let: { id: '$userId' },
             pipeline: [
               { $match: { $expr: { $eq: ['$_id', '$$id'] } } },
-              { $project: { username: 1, _id: 1, profilePicUrl: 1 } }
+              { $project: { username: 1, _id: 1, profilePicUrl: 1 } },
             ],
-            as: 'userDetail'
-          }
+            as: 'userDetail',
+          },
         },
         { $addFields: { user: { $arrayElemAt: ['$userDetail', 0] } } },
-        { $project: { userDetail: 0, userId: 0, __v: 0 } }
+        { $project: { userDetail: 0, userId: 0, __v: 0 } },
       ]);
 
       res.json(comment);
@@ -126,5 +187,5 @@ exports.getComment = [
       console.log(e);
       res.status(500).send();
     }
-  }
+  },
 ];

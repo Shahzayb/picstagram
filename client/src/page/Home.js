@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
       marginRight: theme.spacing(1),
     },
   },
+  px_0: { paddingLeft: 0, paddingRight: 0 },
 }));
 
 const Home = (props) => {
@@ -60,7 +61,7 @@ const Home = (props) => {
         </div>
       }
     >
-      <Container maxWidth="sm">
+      <Container className={classes.px_0} maxWidth="sm">
         {timeline.map((photo) => (
           <div key={photo._id} className={classes.mb}>
             <TimelinePost photo={photo} />

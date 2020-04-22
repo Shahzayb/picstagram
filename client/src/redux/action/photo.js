@@ -5,6 +5,7 @@ import { getUserPhoto } from '../../api/user';
 import {
   likePhoto as likePhotoApi,
   unlikePhoto as unlikePhotoApi,
+  getPhotoById,
 } from '../../api/photo';
 
 export const fetchUserPhoto = (username, page, done) => async (dispatch) => {
@@ -41,6 +42,20 @@ export const fetchUserPhoto = (username, page, done) => async (dispatch) => {
     });
   } finally {
     done();
+  }
+};
+
+export const fetchPhotoById = (photoId) => async (dispatch) => {
+  try {
+    const photo = await getPhotoById(photoId);
+    dispatch({
+      type: actionTypes.FETCH_PHOTO_BY_ID,
+      payload: {
+        photo,
+      },
+    });
+  } catch (e) {
+    console.log(e);
   }
 };
 

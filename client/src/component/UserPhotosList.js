@@ -1,7 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { Typography, CircularProgress, makeStyles } from '@material-ui/core';
+import {
+  Typography,
+  CircularProgress,
+  makeStyles,
+  Link,
+} from '@material-ui/core';
 import InfiniteScroll from 'react-infinite-scroller';
 import Masonry from 'react-masonry-css';
 
@@ -83,11 +89,18 @@ function UserPhotos({ username, fetchUserPhoto, photos, pagination }) {
           columnClassName={classes.masonryGridColumn}
         >
           {photos.map((photo) => (
-            <CloudinaryImage
-              key={photo._id}
-              publicId={photo.cloudinaryPublicId}
-              alt={photo.tags.join(' ')}
-            />
+            <Link
+              underline="none"
+              color="inherit"
+              component={RouterLink}
+              to={`/p/${photo._id}`}
+            >
+              <CloudinaryImage
+                key={photo._id}
+                publicId={photo.cloudinaryPublicId}
+                alt={photo.tags.join(' ')}
+              />
+            </Link>
           ))}
         </Masonry>
       </InfiniteScroll>

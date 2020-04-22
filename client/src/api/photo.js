@@ -67,3 +67,21 @@ export const getComments = async (photoId, page) => {
     return Promise.reject(response);
   }
 };
+
+export const getPhotoById = async (photoId) => {
+  const jwtToken = localStorage.getItem('token') || '';
+  const url = `/api/photo/${photoId}`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+};

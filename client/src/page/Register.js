@@ -21,42 +21,40 @@ import Copyright from '../component/Copyright';
 import { postUser as registerUserApi } from '../api/user';
 import { loginUser } from '../redux/action/auth';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 const initialValues = {
   name: '',
   username: '',
   email: '',
-  password: ''
+  password: '',
 };
 
 const validationSchema = yupObject().shape({
   name: yupString().required('required'),
   username: yupString().required('required'),
-  email: yupString()
-    .required('required')
-    .email('invalid email'),
+  email: yupString().required('required').email('invalid email'),
   password: yupString()
     .required('required')
-    .min(8, 'must be 8 characters or more')
+    .min(8, 'must be 8 characters or more'),
 });
 
 function Register(props) {
@@ -71,7 +69,7 @@ function Register(props) {
         .then(({ user, token }) => {
           loginUser(user, token);
         })
-        .catch(res => {
+        .catch((res) => {
           if (res.status === 422) {
             res.json().then(({ errors }) => {
               errors.forEach(({ param, msg }) => {
@@ -81,7 +79,7 @@ function Register(props) {
           }
           formik.setSubmitting(false);
         });
-    }
+    },
   });
 
   return (
@@ -157,7 +155,9 @@ function Register(props) {
             onClick={formik.handleSubmit}
           >
             Sign Up
-            {formik.isSubmitting ? <CircularProgress size={16} /> : null}
+            {formik.isSubmitting ? (
+              <CircularProgress style={{ marginLeft: '1rem' }} size={16} />
+            ) : null}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
