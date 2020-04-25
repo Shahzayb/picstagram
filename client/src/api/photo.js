@@ -46,7 +46,7 @@ export const postComment = async (photoId, comment) => {
     body: JSON.stringify({ comment }),
   });
   if (response.ok) {
-    return response;
+    return response.json();
   } else {
     return Promise.reject(response);
   }

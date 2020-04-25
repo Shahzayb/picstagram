@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
-import { format } from 'timeago.js';
+import { format, register } from 'timeago.js';
+import en_short from 'timeago.js/lib/lang/en_short';
 
 import {
   Typography,
@@ -15,6 +16,8 @@ import InfiniteScroll from 'react-infinite-scroller';
 import { fetchComment } from '../redux/action/photo';
 
 import orm from '../redux/orm';
+
+register('en_short', en_short);
 
 function CommentList({ comments, pagination, fetchComment, photoId }) {
   const [fetching, setFetching] = React.useState(false);
@@ -94,7 +97,7 @@ function CommentList({ comments, pagination, fetchComment, photoId }) {
               </Typography>
               <Typography
                 style={{ fontSize: '10px' }}
-                variant="overline"
+                variant="caption"
                 display="block"
               >
                 {format(comment.createdAt, 'en_short')}

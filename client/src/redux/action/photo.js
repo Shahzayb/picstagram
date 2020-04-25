@@ -7,6 +7,7 @@ import {
   unlikePhoto as unlikePhotoApi,
   getPhotoById,
   getComments,
+  postComment,
 } from '../../api/photo';
 
 export const fetchUserPhoto = (username, page, done) => async (dispatch) => {
@@ -143,5 +144,21 @@ export const fetchComment = (photoId, page, done) => async (dispatch) => {
     });
   } finally {
     done();
+  }
+};
+
+export const createComment = (photoId, comment, done) => async (dispatch) => {
+  try {
+    const commentRes = await postComment(photoId, comment);
+    dispatch({
+      type: actionTypes.CREATE_COMMENT,
+      payload: {
+        comment: commentRes,
+      },
+    });
+    done(false, true);
+  } catch (e) {
+    console.log(e);
+    done(true);
   }
 };

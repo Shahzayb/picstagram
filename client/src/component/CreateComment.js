@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import { useFormik } from 'formik';
 import { object as yupObject, string as yupString } from 'yup';
@@ -11,7 +12,8 @@ import {
   CircularProgress,
 } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import { postComment } from '../api/photo';
+
+import { createComment } from '../redux/action/photo';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -45,7 +47,7 @@ const validationSchema = yupObject().shape({
     .max(120, 'comment is too long'),
 });
 
-export default function CreateComment({ photoId }) {
+function CreateComment({ photoId, createComment }) {
   const classes = useStyles();
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
@@ -56,17 +58,15 @@ export default function CreateComment({ photoId }) {
     onSubmit: (values, formik) => {
       setError(false);
       setSuccess(false);
-      postComment(photoId, values.comment)
-        .then(() => {
+      createComment(photoId, values.comment, (error, success) => {
+        if (success) {
           setSuccess(true);
-        })
-        .catch(() => {
-          setError(true);
-        })
-        .finally(() => {
           formik.resetForm();
-          formik.setSubmitting(false);
-        });
+        } else {
+          setError(true);
+        }
+        formik.setSubmitting(false);
+      });
     },
   });
 
@@ -108,7 +108,7 @@ export default function CreateComment({ photoId }) {
         </Alert>
       </Snackbar>
 
-      <form className={classes.commentContainer} noValidate>
+      <div className={classes.commentContainer}>
         <TextField
           className={classes.grow}
           label="Add a comment"
@@ -117,7 +117,6 @@ export default function CreateComment({ photoId }) {
           name="comment"
           size="small"
           {...formik.getFieldProps('comment')}
-          // error={formik.touched.comment && !!formik.errors.comment}
           helperText={formik.touched.comment && formik.errors.comment}
           onBlur={() => {}}
         />
@@ -130,7 +129,11 @@ export default function CreateComment({ photoId }) {
         >
           {!formik.isSubmitting ? 'Post' : <CircularProgress size={20} />}
         </Button>
-      </form>
+      </div>
     </div>
   );
 }
+
+const mapDispatch = { createComment };
+
+export default connect(null, mapDispatch)(CreateComment);
