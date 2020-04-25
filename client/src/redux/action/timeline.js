@@ -25,6 +25,15 @@ export const fetchTimeline = (page, done) => async (dispatch, getState) => {
     });
   } catch (e) {
     console.log(e);
+    dispatch({
+      type: actionTypes.UPDATE_TIMELINE_PAGE,
+      payload: {
+        pagination: {
+          curPage: page,
+          hasMore: false,
+        },
+      },
+    });
   } finally {
     done();
   }

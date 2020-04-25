@@ -111,7 +111,7 @@ export default function CreateComment({ photoId }) {
       <form className={classes.commentContainer} noValidate>
         <TextField
           className={classes.grow}
-          label="Comment"
+          label="Add a comment"
           type="text"
           variant="outlined"
           name="comment"

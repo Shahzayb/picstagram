@@ -24,6 +24,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-orm": "^0.16.1",
     "redux-thunk": "^2.3.0",
+    "timeago.js": "^4.0.2",
     "yup": "^0.28.1"
   },
   "scripts": {

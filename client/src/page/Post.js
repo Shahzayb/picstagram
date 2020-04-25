@@ -8,7 +8,7 @@ import { fetchPhotoById } from '../redux/action/photo';
 
 function PostPage({ photo, fetchPhotoById, photoId }) {
   React.useEffect(() => {
-    if (!photo) {
+    if (!photo || !photo.isComplete) {
       fetchPhotoById(photoId);
     }
   }, [photo, photoId, fetchPhotoById]);

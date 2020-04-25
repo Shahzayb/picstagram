@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { format } from 'timeago.js';
 
 import { Paper, Link, Avatar, makeStyles, Typography } from '@material-ui/core';
 
 import CloudinaryImage from './CloudinaryImage';
 import CreateComment from './CreateComment';
 import LikeButton from './LikeButton';
+import { isSmallScreen } from '../util/screen';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -57,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
 function Post({ photo }) {
   const classes = useStyles();
   const location = useLocation();
+  const insideModal = !isSmallScreen();
 
   return (
     <Paper variant="outlined" square>
@@ -113,7 +116,7 @@ function Post({ photo }) {
             component={RouterLink}
             to={{
               pathname: `/p/${photo._id}/comments`,
-              state: { background: location },
+              state: { background: insideModal ? location : null },
             }}
             underline="none"
             color="inherit"
@@ -127,6 +130,13 @@ function Post({ photo }) {
               View Comments
             </Typography>
           </Link>
+          <Typography
+            style={{ fontSize: '10px' }}
+            variant="overline"
+            display="block"
+          >
+            {format(photo.createdAt)}
+          </Typography>
         </div>
         <CreateComment photoId={photo._id} />
       </footer>

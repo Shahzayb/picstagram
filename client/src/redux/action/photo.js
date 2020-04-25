@@ -6,6 +6,7 @@ import {
   likePhoto as likePhotoApi,
   unlikePhoto as unlikePhotoApi,
   getPhotoById,
+  getComments,
 } from '../../api/photo';
 
 export const fetchUserPhoto = (username, page, done) => async (dispatch) => {
@@ -106,5 +107,41 @@ export const likePhoto = (photoId, done) => async (dispatch) => {
     });
 
     done('Failed to like post!');
+  }
+};
+
+export const fetchComment = (photoId, page, done) => async (dispatch) => {
+  try {
+    const comments = await getComments(photoId, page);
+    dispatch({
+      type: actionTypes.FETCH_PHOTO_COMMENTS,
+      payload: {
+        comments,
+      },
+    });
+    dispatch({
+      type: actionTypes.UPDATE_PHOTO_COMMENT_PAGE,
+      payload: {
+        photoId,
+        pagination: {
+          curPage: page,
+          hasMore: comments.length === pageSize,
+        },
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    dispatch({
+      type: actionTypes.UPDATE_PHOTO_COMMENT_PAGE,
+      payload: {
+        photoId,
+        pagination: {
+          curPage: page,
+          hasMore: false,
+        },
+      },
+    });
+  } finally {
+    done();
   }
 };

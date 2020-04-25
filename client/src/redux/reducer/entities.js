@@ -92,6 +92,27 @@ export default function entitiesReducer(state = initialState, action) {
 
       return session.state;
     }
+    case actionTypes.FETCH_PHOTO_COMMENTS: {
+      const { comments } = action.payload;
+      const session = orm.session(state);
+      const { User, Photo, Comment } = session;
+
+      comments.forEach((comment) => {
+        const user = User.upsert({
+          ...comment.user,
+          id: comment.user._id,
+        });
+        const photo = Photo.upsert({ id: comment.photoId, user });
+        Comment.upsert({
+          ...comment,
+          id: comment._id,
+          user,
+          photo,
+        });
+      });
+
+      return session.state;
+    }
     case actionTypes.FETCH_PHOTO_BY_ID: {
       const { photo } = action.payload;
       const session = orm.session(state);
@@ -102,6 +123,7 @@ export default function entitiesReducer(state = initialState, action) {
         ...photo,
         id: photo._id,
         user: photoUser,
+        isComplete: true,
       });
 
       return session.state;
@@ -149,11 +171,16 @@ export default function entitiesReducer(state = initialState, action) {
       const user = User.upsert({ ...userObj, id: userObj._id });
       photos.forEach((photo) => {
         const photoUser = User.upsert({ ...photo.user, id: photo.user._id });
+        // debugger;
+        delete photo.user;
         const timelinePhoto = Photo.upsert({
           ...photo,
           id: photo._id,
           user: photoUser,
         });
+        // timelinePhoto.user = photoUser;
+        // console.log('timelinePhoto.user', timelinePhoto.user);
+        // console.log('photoUser', photoUser);
         user.timeline.add(timelinePhoto);
       });
 

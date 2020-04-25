@@ -46,6 +46,16 @@ export const fetchUserFollowing = (username, page, done) => async (
     });
   } catch (e) {
     console.log(e);
+    dispatch({
+      type: actionTypes.UPDATE_USER_FOLLOWING_PAGE,
+      payload: {
+        username,
+        pagination: {
+          curPage: page,
+          hasMore: false,
+        },
+      },
+    });
   } finally {
     done();
   }
@@ -74,6 +84,16 @@ export const fetchUserFollower = (username, page, done) => async (dispatch) => {
     });
   } catch (e) {
     console.log(e);
+    dispatch({
+      type: actionTypes.UPDATE_USER_FOLLOWER_PAGE,
+      payload: {
+        username,
+        pagination: {
+          curPage: page,
+          hasMore: false,
+        },
+      },
+    });
   } finally {
     done();
   }

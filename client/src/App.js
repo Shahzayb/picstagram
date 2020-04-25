@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import Layout from './component/Layout';
 import Navbar from './component/Navbar';
 import Modal from './component/Modal';
-import Comments from './component/Comments';
 
 import Home from './page/Home';
 import Login from './page/Login';
@@ -13,6 +12,7 @@ import Register from './page/Register';
 import Profile from './page/Profile';
 import CreatePost from './page/CreatePost';
 import Post from './page/Post';
+import Comments from './page/Comments';
 
 import withStartupLogin from './hoc/withStartupLogin';
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
@@ -64,6 +64,9 @@ function App() {
           <Route path="/@:username" component={Profile} />
 
           <Route exact path="/p/:photoId/" component={Post} />
+          <Route exact path="/p/:photoId/comments">
+            <Comments />
+          </Route>
         </Switch>
         {!!background ? (
           <>
@@ -73,7 +76,9 @@ function App() {
               </Modal>
             </AuthenticatedAccessibleRoute>
             <Route exact path="/p/:photoId/comments">
-              <Comments />
+              <Modal title="Comments">
+                <Comments insideModal />
+              </Modal>
             </Route>
           </>
         ) : null}

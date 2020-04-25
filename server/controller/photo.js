@@ -163,7 +163,9 @@ exports.getComment = [
     try {
       const { page, size } = req.query;
       const skip = (page - 1) * size;
+      const photoId = ObjectId(req.params.photoId);
       const comment = await Comment.aggregate([
+        { $match: { photoId } },
         { $sort: { _id: -1 } },
         { $skip: skip },
         { $limit: size },

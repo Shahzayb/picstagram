@@ -12,6 +12,7 @@ class Photo extends Model {
     createdAt: attr(),
     updatedAt: attr(),
     user: fk('User', 'photos'),
+    isComplete: attr(),
   };
 }
 
@@ -33,4 +34,14 @@ class User extends Model {
   };
 }
 
-export { User, Photo };
+class Comment extends Model {
+  static modelName = 'Comment';
+  static fields = {
+    id: attr(),
+    user: fk('User', 'comments'),
+    photo: fk('Photo', 'comments'),
+    comment: attr(),
+  };
+}
+
+export { User, Photo, Comment };
