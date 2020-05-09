@@ -1,124 +1,49 @@
 import React from 'react';
-import { connect } from 'react-redux';
-
-import { CircularProgress, Snackbar } from '@material-ui/core';
-
-import MuiAlert from '@material-ui/lab/Alert';
+import { CircularProgress } from '@material-ui/core';
 
 import Button from './ResponsiveButton';
-import { followUser, unfollowUser } from '../redux/action/user';
-import { resetTimeline } from '../redux/action/timeline';
+import Snackbar from './Snackbar';
+import { useToggleFollow } from '../react-query/user';
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-function FollowToggle({
-  username,
-  followed,
-  followUser,
-  unfollowUser,
-  resetTimeline,
-}) {
-  const [loading, setLoading] = React.useState(false);
-  const [success, setSuccess] = React.useState('');
-  const [error, setError] = React.useState('');
-
-  const done = React.useCallback((error, success) => {
-    if (success) {
-      setSuccess(success);
-    } else if (error) {
-      setError(error);
-    }
-    setLoading(false);
-  }, []);
-
-  const successCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess('');
-  };
-
-  const errorCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setError('');
-  };
-
-  const followToggleHandler = () => {
-    setLoading(true);
-    if (followed) {
-      unfollowUser(username, done);
-    } else {
-      followUser(username, done);
-    }
-    // reset timeline + pagination
-    resetTimeline();
-  };
+function FollowToggle({ followerUsername, followeeUsername, isFollowed }) {
+  const [mutate, { status, data, error, reset }] = useToggleFollow();
 
   return (
     <div>
       <Snackbar
         open={!!error}
-        autoHideDuration={3000}
-        onClose={errorCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={errorCloseHandler} severity="error">
-          {error}
-        </Alert>
-      </Snackbar>
-
+        onClose={() => reset()}
+        severity="error"
+        message={error?.message}
+      />
       <Snackbar
-        open={!!success}
-        autoHideDuration={3000}
-        onClose={successCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        open={!!data}
+        onClose={() => reset()}
+        severity="success"
+        message={data}
+      />
+
+      <Button
+        color="primary"
+        variant={!isFollowed ? 'contained' : 'outlined'}
+        onClick={() => {
+          mutate({ followerUsername, followeeUsername, isFollowed })
+            .then(console.log)
+            .catch(console.error);
+        }}
+        disabled={status === 'loading'}
       >
-        <Alert onClose={successCloseHandler} severity="success">
-          {success}
-        </Alert>
-      </Snackbar>
-      {!followed && (
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={followToggleHandler}
-          disabled={loading}
-        >
-          Follow
-          {loading && (
-            <CircularProgress
-              style={{ marginLeft: '8px' }}
-              color="inherit"
-              size={16}
-            />
-          )}
-        </Button>
-      )}
-      {followed && (
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={followToggleHandler}
-          disabled={loading}
-        >
-          Unfollow
-          {loading && (
-            <CircularProgress
-              style={{ marginLeft: '8px' }}
-              color="inherit"
-              size={16}
-            />
-          )}
-        </Button>
-      )}
+        {!isFollowed ? 'Follow' : 'Unfollow'}
+        {status === 'loading' && (
+          <CircularProgress
+            style={{ marginLeft: '8px' }}
+            color="inherit"
+            size={16}
+          />
+        )}
+      </Button>
     </div>
   );
 }
 
-const mapDispatch = { followUser, unfollowUser, resetTimeline };
-
-export default connect(null, mapDispatch)(FollowToggle);
+export default FollowToggle;

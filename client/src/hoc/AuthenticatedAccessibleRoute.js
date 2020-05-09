@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Route } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import history from '../lib/history';
+import { useAuth } from '../context/auth-context';
 
-const AuthenticatedAccessibleRoute = ({ authenticated, ...props }) => {
+const AuthenticatedAccessibleRoute = (props) => {
+  const { user } = useAuth();
+  const authenticated = !!user;
   useEffect(() => {
     if (!authenticated) {
       history.push('/login');
@@ -13,6 +15,4 @@ const AuthenticatedAccessibleRoute = ({ authenticated, ...props }) => {
   return authenticated ? <Route {...props} /> : null;
 };
 
-const mapState = state => ({ authenticated: state.auth.isLoggedIn });
-
-export default connect(mapState)(AuthenticatedAccessibleRoute);
+export default AuthenticatedAccessibleRoute;

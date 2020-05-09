@@ -1,13 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
+import { ReactQueryDevtools } from 'react-query-devtools';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { ReactQueryConfigProvider } from 'react-query';
 
+import { AuthProvider } from './context/auth-context';
 import history from './lib/history';
 
-import configureStore from './redux/store/configureStore';
-const store = configureStore();
+const queryConfig = {
+  refetchAllOnWindowFocus: false,
+  staleTime: 60 * 60 * 1000,
+  cacheTime: 30 * 60 * 1000,
+};
 
 // Save a reference to the root element for reuse
 const rootEl = document.getElementById('root');
@@ -18,12 +23,17 @@ let render = () => {
   const App = require('./App').default;
 
   ReactDOM.render(
-    <Provider store={store}>
+    <>
       <CssBaseline />
       <Router history={history}>
-        <App />
+        <ReactQueryConfigProvider config={queryConfig}>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ReactQueryConfigProvider>
       </Router>
-    </Provider>,
+      <ReactQueryDevtools initialIsOpen={false} />
+    </>,
     rootEl
   );
 };

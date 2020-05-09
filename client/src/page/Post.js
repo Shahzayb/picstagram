@@ -1,53 +1,26 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { CircularProgress, Container } from '@material-ui/core';
+import { useParams } from 'react-router-dom';
+import { Container } from '@material-ui/core';
 
 import Post from '../component/Post';
-import orm from '../redux/orm/index';
-import { fetchPhotoById } from '../redux/action/photo';
+import FullWidthSpinner from '../component/FullWidthSpinner';
+import Snackbar from '../component/Snackbar';
+import { useFetchPhotoById } from '../react-query/photo';
 
-function PostPage({ photo, fetchPhotoById, photoId }) {
-  React.useEffect(() => {
-    if (!photo || !photo.isComplete) {
-      fetchPhotoById(photoId);
-    }
-  }, [photo, photoId, fetchPhotoById]);
+function PostPage() {
+  const { photoId } = useParams();
 
-  if (!photo) {
-    return (
-      <div
-        style={{
-          width: '100%',
-          textAlign: 'center',
-          marginTop: '1rem',
-        }}
-      >
-        <CircularProgress color="inherit" size={20} />
-      </div>
-    );
-  }
+  const { status, data, error } = useFetchPhotoById(photoId);
 
-  return (
+  return status === 'loading' ? (
+    <FullWidthSpinner />
+  ) : status === 'error' ? (
+    <Snackbar severity="error" message={error.message} />
+  ) : (
     <Container style={{ paddingLeft: 0, paddingRight: 0 }} maxWidth="sm">
-      <Post photo={photo} />
+      <Post photo={data} />
     </Container>
   );
 }
 
-const mapState = ({ entities }, ownProps) => {
-  console.log(ownProps);
-  const photoId = ownProps.match.params.photoId;
-  const session = orm.session(entities);
-  const { Photo } = session;
-
-  const photo = Photo.withId(photoId);
-
-  return {
-    photo,
-    photoId,
-  };
-};
-
-const mapDispatch = { fetchPhotoById };
-
-export default connect(mapState, mapDispatch)(PostPage);
+export default PostPage;

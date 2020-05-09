@@ -1,12 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroller';
+// import InfiniteScroll from 'react-infinite-scroller';
 
 import { CircularProgress, makeStyles, Container } from '@material-ui/core';
 
 import TimelinePost from '../component/Post';
-import { fetchTimeline } from '../redux/action/timeline';
-import orm from '../redux/orm/index';
+import Snackbar from '../component/Snackbar';
+import { useInfiniteScroll } from 'react-infinite-scroll-hook';
+import { useTimelineQuery } from '../react-query/timeline';
+import FullWidthSpinner from '../component/FullWidthSpinner';
 
 const useStyles = makeStyles((theme) => ({
   w_100: {
@@ -37,60 +38,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Home = (props) => {
-  const { fetchTimeline, timeline, pagination } = props;
   const classes = useStyles();
-  const [fetching, setFetching] = React.useState(false);
-  return (
-    <InfiniteScroll
-      pageStart={0}
-      loadMore={() => {
-        if (!fetching) {
-          setFetching(true);
-          fetchTimeline(pagination.curPage + 1, () => {
-            setFetching(false);
-          });
-        }
-      }}
-      hasMore={pagination.hasMore}
-      loader={
-        <div
-          className={`${classes.w_100} ${classes.textCenter} ${classes.mt_1}`}
-          key="1"
-        >
-          <CircularProgress color="inherit" size={20} />
-        </div>
-      }
-    >
-      <Container className={classes.px_0} maxWidth="sm">
-        {timeline.map((photo) => (
-          <div key={photo._id} className={classes.mb}>
-            <TimelinePost photo={photo} />
-          </div>
-        ))}
-      </Container>
-    </InfiniteScroll>
+  const query = useTimelineQuery();
+
+  const infiniteRef = useInfiniteScroll({
+    loading: query.isFetchingMore || query.isFetching,
+    hasNextPage: !!query.canFetchMore || query.isFetchingMore,
+    onLoadMore: () => {
+      query.fetchMore();
+    },
+  });
+
+  return query.status === 'loading' ? (
+    <FullWidthSpinner />
+  ) : (
+    <Container ref={infiniteRef} className={classes.px_0} maxWidth="sm">
+      {query.data.map((timeline, i) => (
+        <React.Fragment key={i}>
+          {timeline.map((photo) => (
+            <div key={photo._id} className={classes.mb}>
+              <TimelinePost photo={photo} />
+            </div>
+          ))}
+        </React.Fragment>
+      ))}
+      {(query.isFetchingMore || query.isFetching || !!query.canFetchMore) && (
+        <FullWidthSpinner />
+      )}
+      {query.status === 'error' && (
+        <Snackbar severity="error" message={query.error.message} />
+      )}
+    </Container>
   );
 };
 
-const mapState = ({ auth, entities, pagination }) => {
-  const userId = auth.user._id;
-  const session = orm.session(entities);
-
-  const user = session.User.withId(userId);
-  const timeline = [];
-
-  user.timeline.toModelArray().forEach((timelineModel) => {
-    const timelineObj = { ...timelineModel.ref };
-    timelineObj.user = { ...timelineModel.user.ref };
-    timeline.push(timelineObj);
-  });
-
-  return {
-    timeline,
-    pagination: pagination.timeline,
-  };
-};
-
-const mapDispatch = { fetchTimeline };
-
-export default connect(mapState, mapDispatch)(Home);
+export default Home;

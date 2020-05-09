@@ -223,7 +223,7 @@ exports.photoByUsername = [
     .withMessage('page number is required')
     .toInt()
     .custom((page) => {
-      if (page < 1) {
+      if (!isFinite(page) || page < 1) {
         throw new Error();
       }
       return true;
@@ -236,7 +236,7 @@ exports.photoByUsername = [
     .withMessage('size number is required')
     .toInt()
     .custom((size) => {
-      if (size < 1 || size > 100) {
+      if (!isFinite(size) || size < 1 || size > 100) {
         throw new Error();
       }
       return true;
@@ -268,7 +268,7 @@ exports.getFollowing = [
     .withMessage('page number is required')
     .toInt()
     .custom((page) => {
-      if (page < 1) {
+      if (!isFinite(page) || page < 1) {
         throw new Error();
       }
       return true;
@@ -281,7 +281,7 @@ exports.getFollowing = [
     .withMessage('size number is required')
     .toInt()
     .custom((size) => {
-      if (size < 1 || size > 100) {
+      if (!isFinite(size) || size < 1 || size > 100) {
         throw new Error();
       }
       return true;
@@ -313,7 +313,7 @@ exports.getFollower = [
     .withMessage('page number is required')
     .toInt()
     .custom((page) => {
-      if (page < 1) {
+      if (!isFinite(page) || page < 1) {
         throw new Error();
       }
       return true;
@@ -326,7 +326,7 @@ exports.getFollower = [
     .withMessage('size number is required')
     .toInt()
     .custom((size) => {
-      if (size < 1 || size > 100) {
+      if (!isFinite(size) || size < 1 || size > 100) {
         throw new Error();
       }
       return true;

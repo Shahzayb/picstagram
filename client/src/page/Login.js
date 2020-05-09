@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
 import { useFormik } from 'formik';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { object, string } from 'yup';
@@ -20,7 +19,7 @@ import Collapse from '@material-ui/core/Collapse';
 import CloseIcon from '@material-ui/icons/Close';
 import Copyright from '../component/Copyright';
 import { loginUser as loginUserApi } from '../api/user';
-import { loginUser as loginUserAction } from '../redux/action/auth';
+import { useAuth } from '../context/auth-context';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -47,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Login(props) {
-  const { loginUserAction } = props;
   const classes = useStyles();
+  const { login: setAuthUser } = useAuth();
   const [isAlertOpen, setAlertOpen] = useState(false);
 
   const formik = useFormik({
@@ -61,7 +60,7 @@ function Login(props) {
       setAlertOpen(false);
       loginUserApi(values)
         .then(({ user, token }) => {
-          loginUserAction(user, token);
+          setAuthUser(user, token);
         })
         .catch(() => {
           setAlertOpen(true);
@@ -176,6 +175,4 @@ function Login(props) {
   );
 }
 
-const mapDispatch = { loginUserAction };
-
-export default connect(null, mapDispatch)(Login);
+export default Login;

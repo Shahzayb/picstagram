@@ -1,11 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
-import { makeStyles, Snackbar, ButtonBase } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
+import { makeStyles, ButtonBase } from '@material-ui/core';
 import HeartIcon from '@material-ui/icons/Favorite';
 
-import { likePhoto, unlikePhoto } from '../redux/action/photo';
+import Snackbar from './Snackbar';
+import { useToggleLike } from '../react-query/photo';
 
 const useStyles = makeStyles((theme) => ({
   unliked: {
@@ -20,73 +19,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-function LikeButton({ photoId, liked, likePhoto, unlikePhoto }) {
+function LikeButton({ photoId, liked }) {
   const classes = useStyles();
-  const [pending, setPending] = React.useState(false);
-  const [error, setError] = React.useState('');
-  const [success, setSuccess] = React.useState('');
 
-  const successCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess('');
-  };
-
-  const errorCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setError('');
-  };
+  const [mutate, { status, data, error, reset }] = useToggleLike();
 
   return (
     <>
       <Snackbar
         open={!!error}
-        autoHideDuration={3000}
-        onClose={errorCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={errorCloseHandler} severity="error">
-          {error}
-        </Alert>
-      </Snackbar>
-
+        onClose={() => reset()}
+        severity="error"
+        message={error?.message}
+      />
       <Snackbar
-        open={!!success}
-        autoHideDuration={3000}
-        onClose={successCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={successCloseHandler} severity="success">
-          {success}
-        </Alert>
-      </Snackbar>
+        open={!!data}
+        onClose={() => reset()}
+        severity="success"
+        message={data}
+      />
+
       <ButtonBase
         onClick={() => {
-          setPending(true);
-          const cb = (error, success) => {
-            if (error) {
-              setError(error);
-            } else if (success) {
-              setSuccess(success);
-            }
-            setPending(false);
-          };
-          if (liked) {
-            unlikePhoto(photoId, cb);
-          } else {
-            likePhoto(photoId, cb);
-          }
+          mutate({ photoId, liked }).then(console.log).catch(console.error);
         }}
         disableRipple
         disableTouchRipple
-        disabled={pending}
+        disabled={status === 'loading'}
       >
         <HeartIcon
           className={`${liked ? classes.liked : classes.unliked} ${
@@ -98,6 +57,4 @@ function LikeButton({ photoId, liked, likePhoto, unlikePhoto }) {
   );
 }
 
-const mapDispatch = { likePhoto, unlikePhoto };
-
-export default connect(null, mapDispatch)(LikeButton);
+export default LikeButton;

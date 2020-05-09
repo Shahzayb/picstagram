@@ -1,24 +1,19 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Link as RouterLink, Route } from 'react-router-dom';
+import { Link as RouterLink, useParams, useLocation } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 
 import FollowToggle from '../component/FollowToggle';
-import UserPhotos from '../component/UserPhotosList';
+import UserPhotosList from '../component/UserPhotosList';
 import ResponsiveButton from '../component/ResponsiveButton';
-import Followers from '../component/FollowersList';
-import Following from '../component/FollowingList';
-
-import { fetchUser, followUser, unfollowUser } from '../redux/action/user';
-
-import { fetchUserPhoto } from '../redux/action/photo';
-
-import orm from '../redux/orm/';
+import { useAuth } from '../context/auth-context';
+import { useFetchUser } from '../react-query/user';
+import FullWidthSpinner from '../component/FullWidthSpinner';
+import Snackbar from '../component/Snackbar';
+import { isSmallScreen } from '../util/screen';
 
 const useStyles = makeStyles((theme) => ({
   loader: {
@@ -50,133 +45,105 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Profile = (props) => {
+const Profile = () => {
   const classes = useStyles();
-  const { user, username, fetchUser, authenticated, isMine } = props;
+  const { username } = useParams();
+  const location = useLocation();
+  const { user: authUser } = useAuth();
+  const authenticated = !!authUser;
+  const isMine = authUser?.username === username;
 
-  React.useEffect(() => {
-    if (!user) {
-      fetchUser(username);
-    }
-  }, [user, username, fetchUser]);
+  const insideModal = !isSmallScreen();
 
-  if (!user) {
-    return (
-      <div className={classes.loader}>
-        <CircularProgress color="inherit" size={20} />
-      </div>
-    );
-  }
+  const { status, data: user, error } = useFetchUser(username);
 
-  return (
-    !!user && (
-      <main>
-        <header>
-          <div className={`${classes.dFlex} ${classes.mb2}`}>
-            <div style={{ marginRight: '3rem' }}>
-              <Avatar
-                className={classes.avatar}
-                alt={user.name}
-                src={user.profilePicUrl}
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <Typography gutterBottom variant="h5" component="h1">
-                {user.username}
-              </Typography>
-              <div>
-                {authenticated && !isMine && (
-                  <FollowToggle
-                    username={username}
-                    followed={user.isFollowedByMe}
-                  />
-                )}
-                {authenticated && isMine && (
-                  <ResponsiveButton variant="outlined">
-                    Edit Account
-                  </ResponsiveButton>
-                )}
-              </div>
-            </div>
+  return status === 'loading' ? (
+    <FullWidthSpinner />
+  ) : status === 'error' ? (
+    <Snackbar severity="error" message={error.message} />
+  ) : (
+    <main>
+      <header>
+        <div className={`${classes.dFlex} ${classes.mb2}`}>
+          <div style={{ marginRight: '3rem' }}>
+            <Avatar
+              className={classes.avatar}
+              alt={user.name}
+              src={user.profilePicUrl}
+            />
           </div>
-
-          <div>
-            <Typography gutterBottom variant="subtitle2" component="h2">
-              {user.name}
+          <div style={{ flex: 1 }}>
+            <Typography gutterBottom variant="h5" component="h1">
+              {user.username}
             </Typography>
-            <Typography variant="body1">{user.bio}</Typography>
+            <div>
+              {authenticated && !isMine && (
+                <FollowToggle
+                  followerUsername={authUser.username}
+                  followeeUsername={username}
+                  isFollowed={user.isFollowedByMe}
+                />
+              )}
+              {authenticated && isMine && (
+                <ResponsiveButton variant="outlined">
+                  Edit Account
+                </ResponsiveButton>
+              )}
+            </div>
           </div>
-          <ul className={classes.ul}>
-            <li className={classes.textCenter}>
-              <Link
-                underline="none"
-                color="inherit"
-                component={RouterLink}
-                to={`/@${user.username}`}
-              >
-                <Typography variant="h6">{user.photoCount}</Typography>
-                <Typography variant="body2">posts</Typography>
-              </Link>
-            </li>
-            <li className={classes.textCenter}>
-              <Link
-                underline="none"
-                color="inherit"
-                component={RouterLink}
-                to={{
-                  pathname: `/@${user.username}/followers`,
-                }}
-              >
-                <Typography variant="h6">{user.followerCount}</Typography>
-                <Typography variant="body2">followers</Typography>
-              </Link>
-            </li>
-            <li className={classes.textCenter}>
-              <Link
-                underline="none"
-                color="inherit"
-                component={RouterLink}
-                to={{
-                  pathname: `/@${user.username}/following`,
-                }}
-              >
-                <Typography variant="h6">{user.followingCount}</Typography>
-                <Typography variant="body2">following</Typography>
-              </Link>
-            </li>
-          </ul>
-        </header>
-        <UserPhotos username={username} />
-        <Route exact path="/@:username/followers">
-          <Followers username={username} />
-        </Route>
-        <Route exact path="/@:username/following">
-          <Following username={username} />
-        </Route>
-      </main>
-    )
+        </div>
+
+        <div>
+          <Typography gutterBottom variant="subtitle2" component="h2">
+            {user.name}
+          </Typography>
+          <Typography variant="body1">{user.bio}</Typography>
+        </div>
+        <ul className={classes.ul}>
+          <li className={classes.textCenter}>
+            <Link
+              underline="none"
+              color="inherit"
+              component={RouterLink}
+              to={`/@${user.username}`}
+            >
+              <Typography variant="h6">{user.photoCount}</Typography>
+              <Typography variant="body2">posts</Typography>
+            </Link>
+          </li>
+          <li className={classes.textCenter}>
+            <Link
+              underline="none"
+              color="inherit"
+              component={RouterLink}
+              to={{
+                pathname: `/@${user.username}/followers`,
+                state: { background: insideModal ? location : null },
+              }}
+            >
+              <Typography variant="h6">{user.followerCount}</Typography>
+              <Typography variant="body2">followers</Typography>
+            </Link>
+          </li>
+          <li className={classes.textCenter}>
+            <Link
+              underline="none"
+              color="inherit"
+              component={RouterLink}
+              to={{
+                pathname: `/@${user.username}/following`,
+                state: { background: insideModal ? location : null },
+              }}
+            >
+              <Typography variant="h6">{user.followingCount}</Typography>
+              <Typography variant="body2">following</Typography>
+            </Link>
+          </li>
+        </ul>
+      </header>
+      <UserPhotosList username={username} />
+    </main>
   );
 };
 
-const mapState = ({ auth, entities }, ownProps) => {
-  const username = ownProps.match.params.username;
-  const session = orm.session(entities);
-
-  const user = session.User.get({ username });
-
-  return {
-    user: user && user.isComplete && user.ref,
-    username,
-    authenticated: auth.isLoggedIn,
-    isMine: !!auth.user && auth.user.username === username,
-  };
-};
-
-const mapDispatch = {
-  fetchUser,
-  followUser,
-  unfollowUser,
-  fetchUserPhoto,
-};
-
-export default connect(mapState, mapDispatch)(Profile);
+export default Profile;

@@ -1,6 +1,10 @@
 import { pageSize } from '../config/env';
 
-export const getMyProfile = async (jwtToken) => {
+export const getMyProfile = async () => {
+  const jwtToken = localStorage.getItem('token') || '';
+  if (!jwtToken) {
+    return Promise.reject();
+  }
   const url = '/api/user';
   return fetch(url, {
     headers: {
