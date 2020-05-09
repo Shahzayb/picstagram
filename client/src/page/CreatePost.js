@@ -9,6 +9,8 @@ import ImageDropzone from '../component/ImageDropzone';
 import ImagePreview from '../component/ImagePreview';
 import TextEditor from '../component/TextEditor';
 import { getSignature, uploadImage, postTicket } from '../api/cloudinary';
+import { queryCache } from 'react-query';
+import { useAuth } from '../context/auth-context';
 
 const useStyles = makeStyles((theme) => ({
   flex_bw: {
@@ -67,6 +69,9 @@ const useStyles = makeStyles((theme) => ({
 
 const CreatePost = (props) => {
   const classes = useStyles();
+  const {
+    user: { username },
+  } = useAuth();
   const [image, setImage] = React.useState(null);
   const [title, setTitle] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
@@ -92,6 +97,8 @@ const CreatePost = (props) => {
       setUploaded(true);
 
       // now image is uploaded, add image to timeline & profile
+      queryCache.refetchQueries('timeline', { force: true });
+      queryCache.refetchQueries(['user_photos', username], { force: true });
     } catch (e) {
       console.log(e);
       setUploading(false);
