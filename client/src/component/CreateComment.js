@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import { useFormik } from 'formik';
 import { object as yupObject, string as yupString } from 'yup';
@@ -8,16 +7,11 @@ import {
   TextField,
   Button,
   makeStyles,
-  Snackbar,
   CircularProgress,
 } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
 
-import { createComment } from '../redux/action/photo';
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import Snackbar from './Snackbar';
+import { useCreateComment } from '../react-query/photo';
 
 const useStyles = makeStyles((theme) => ({
   p1: {
@@ -47,66 +41,38 @@ const validationSchema = yupObject().shape({
     .max(120, 'comment is too long'),
 });
 
-function CreateComment({ photoId, createComment }) {
+function CreateComment({ photoId }) {
   const classes = useStyles();
-  const [error, setError] = React.useState(false);
-  const [success, setSuccess] = React.useState(false);
+  const [mutate, { data, error, reset }] = useCreateComment();
 
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: (values, formik) => {
-      setError(false);
-      setSuccess(false);
-      createComment(photoId, values.comment, (error, success) => {
-        if (success) {
-          setSuccess(true);
+      mutate({ photoId, comment: values.comment })
+        .then(() => {
           formik.resetForm();
-        } else {
-          setError(true);
-        }
-        formik.setSubmitting(false);
-      });
+        })
+        .finally(() => {
+          formik.setSubmitting(false);
+        });
     },
   });
-
-  const successCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess(false);
-  };
-
-  const errorCloseHandler = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setError(false);
-  };
 
   return (
     <div className={`${classes.p1}`}>
       <Snackbar
-        open={error}
-        autoHideDuration={3000}
-        onClose={errorCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={errorCloseHandler} severity="error">
-          Failed to add comment!
-        </Alert>
-      </Snackbar>
-
+        open={!!error}
+        onClose={() => reset()}
+        severity="error"
+        message={error?.message}
+      />
       <Snackbar
-        open={success}
-        autoHideDuration={3000}
-        onClose={successCloseHandler}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={successCloseHandler} severity="success">
-          Added comment!
-        </Alert>
-      </Snackbar>
+        open={!!data}
+        onClose={() => reset()}
+        severity="success"
+        message={'Added comment'}
+      />
 
       <div className={classes.commentContainer}>
         <TextField
@@ -134,6 +100,4 @@ function CreateComment({ photoId, createComment }) {
   );
 }
 
-const mapDispatch = { createComment };
-
-export default connect(null, mapDispatch)(CreateComment);
+export default CreateComment;

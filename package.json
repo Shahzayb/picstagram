@@ -28,5 +28,6 @@
   "homepage": "https://github.com/Shahzayb/pistagram#readme",
   "devDependencies": {
     "concurrently": "^5.1.0"
-  }
+  },
+  "dependencies": {}
 }

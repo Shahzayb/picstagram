@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,8 +14,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 
 import ResponsiveButton from './ResponsiveButton';
-import { logoutUser } from '../redux/action/auth';
 import { isSmallScreen } from '../util/screen';
+import { useAuth } from '../context/auth-context';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -40,7 +39,8 @@ const useStyles = makeStyles((theme) => ({
 function Navbar(props) {
   const classes = useStyles();
   const location = useLocation();
-  const { logoutUser, authenticated, user } = props;
+  const { user, logout } = useAuth();
+  const authenticated = !!user;
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const insideModal = !isSmallScreen();
@@ -123,7 +123,7 @@ function Navbar(props) {
                   <MenuItem
                     onClick={(e) => {
                       handleMenuClose(e);
-                      logoutUser();
+                      logout();
                     }}
                   >
                     Logout
@@ -157,11 +157,4 @@ function Navbar(props) {
   );
 }
 
-const mapState = ({ auth }) => ({
-  authenticated: auth.isLoggedIn,
-  user: auth.user,
-});
-
-const mapDispatch = { logoutUser };
-
-export default connect(mapState, mapDispatch)(Navbar);
+export default Navbar;

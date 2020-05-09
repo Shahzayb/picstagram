@@ -91,8 +91,7 @@ const CreatePost = (props) => {
       setImage(null);
       setUploaded(true);
 
-      // now image is uploaded, remove cached images
-      // resetMyProfile();
+      // now image is uploaded, add image to timeline & profile
     } catch (e) {
       console.log(e);
       setUploading(false);

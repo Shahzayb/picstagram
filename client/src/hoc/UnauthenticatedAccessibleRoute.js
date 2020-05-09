@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { Route } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import history from '../lib/history';
+import { useAuth } from '../context/auth-context';
 
 // const UnauthAccessibleRoutes = ['/register', '/login'];
 
-const UnauthenticatedAccessibleRoute = ({ authenticated, ...props }) => {
+const UnauthenticatedAccessibleRoute = (props) => {
+  const { user } = useAuth();
+  const authenticated = !!user;
   useEffect(() => {
     if (authenticated) {
       // there's one caveat with this approach:
@@ -37,6 +39,4 @@ const UnauthenticatedAccessibleRoute = ({ authenticated, ...props }) => {
   return !authenticated ? <Route {...props} /> : null;
 };
 
-const mapState = state => ({ authenticated: state.auth.isLoggedIn });
-
-export default connect(mapState)(UnauthenticatedAccessibleRoute);
+export default UnauthenticatedAccessibleRoute;

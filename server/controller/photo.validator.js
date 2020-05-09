@@ -29,7 +29,7 @@ const pageQueryValidator = query('page')
   .withMessage('page number is required')
   .toInt()
   .custom((page) => {
-    if (page < 1) {
+    if (!isFinite(page) || page < 1) {
       throw new Error();
     }
     return true;
@@ -43,7 +43,7 @@ const sizeQueryValidator = query('size')
   .withMessage('size number is required')
   .toInt()
   .custom((size) => {
-    if (size < 1 || size > 100) {
+    if (!isFinite(size) || size < 1 || size > 100) {
       throw new Error();
     }
     return true;

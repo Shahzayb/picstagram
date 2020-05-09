@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { useFormik } from 'formik';
@@ -19,7 +18,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Copyright from '../component/Copyright';
 import { postUser as registerUserApi } from '../api/user';
-import { loginUser } from '../redux/action/auth';
+import { useAuth } from '../context/auth-context';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -59,15 +58,14 @@ const validationSchema = yupObject().shape({
 
 function Register(props) {
   const classes = useStyles();
-  const { loginUser } = props;
-
+  const { login: setAuthUser } = useAuth();
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: (values, formik) => {
       registerUserApi(values)
         .then(({ user, token }) => {
-          loginUser(user, token);
+          setAuthUser(user, token);
         })
         .catch((res) => {
           if (res.status === 422) {
@@ -180,6 +178,4 @@ function Register(props) {
   );
 }
 
-const mapDispatch = { loginUser };
-
-export default connect(null, mapDispatch)(Register);
+export default Register;

@@ -7,8 +7,8 @@ const pageQueryValidator = query('page')
   .isEmpty()
   .withMessage('page number is required')
   .toInt()
-  .custom(page => {
-    if (page < 1) {
+  .custom((page) => {
+    if (!isFinite(page) || page < 1) {
       throw new Error();
     }
     return true;
@@ -21,8 +21,8 @@ const sizeQueryValidator = query('size')
   .isEmpty()
   .withMessage('size number is required')
   .toInt()
-  .custom(size => {
-    if (size < 1 || size > 100) {
+  .custom((size) => {
+    if (!isFinite(size) || size < 1 || size > 100) {
       throw new Error();
     }
     return true;

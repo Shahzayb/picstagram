@@ -1,6 +1,5 @@
 import React from 'react';
 import { Switch, Route, useLocation } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import Layout from './component/Layout';
 import Navbar from './component/Navbar';
@@ -13,12 +12,11 @@ import Profile from './page/Profile';
 import CreatePost from './page/CreatePost';
 import Post from './page/Post';
 import Comments from './page/Comments';
+import Followers from './page/Followers';
+import Followings from './page/Followings';
 
-import withStartupLogin from './hoc/withStartupLogin';
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
 import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
-
-import { ensureLogin } from './redux/action/auth';
 
 function App() {
   let location = useLocation();
@@ -46,9 +44,7 @@ function App() {
           <UnauthenticatedAccessibleRoute exact path="/register">
             <Register />
           </UnauthenticatedAccessibleRoute>
-          <Route exact path="/photo/:photoId">
-            <div>photo</div>
-          </Route>
+
           <AuthenticatedAccessibleRoute exact path="/post">
             <CreatePost />
           </AuthenticatedAccessibleRoute>
@@ -61,9 +57,23 @@ function App() {
           <AuthenticatedAccessibleRoute exact path="/account/change-password">
             <div>change password</div>
           </AuthenticatedAccessibleRoute>
-          <Route path="/@:username" component={Profile} />
 
-          <Route exact path="/p/:photoId/" component={Post} />
+          <Route exact path="/@:username">
+            <Profile />
+          </Route>
+
+          <Route exact path="/@:username/followers">
+            <Followers />
+          </Route>
+
+          <Route exact path="/@:username/following">
+            <Followings />
+          </Route>
+
+          <Route exact path="/p/:photoId/">
+            <Post />
+          </Route>
+
           <Route exact path="/p/:photoId/comments">
             <Comments />
           </Route>
@@ -80,6 +90,17 @@ function App() {
                 <Comments insideModal />
               </Modal>
             </Route>
+            <Route exact path="/@:username/followers">
+              <Modal title="Followers">
+                <Followers insideModal />
+              </Modal>
+            </Route>
+
+            <Route exact path="/@:username/following">
+              <Modal title="Followings">
+                <Followings insideModal />
+              </Modal>
+            </Route>
           </>
         ) : null}
       </Layout>
@@ -87,10 +108,4 @@ function App() {
   );
 }
 
-const AppWithStartupLogin = withStartupLogin(App);
-
-const mapState = (state) => ({ loading: state.auth.loading });
-
-const mapDispatch = { ensureLogin };
-
-export default connect(mapState, mapDispatch)(AppWithStartupLogin);
+export default App;

@@ -1,21 +1,14 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 
-import {
-  Typography,
-  CircularProgress,
-  makeStyles,
-  Link,
-} from '@material-ui/core';
-import InfiniteScroll from 'react-infinite-scroller';
+import { Typography, makeStyles, Link } from '@material-ui/core';
 import Masonry from 'react-masonry-css';
+import { useInfiniteScroll } from 'react-infinite-scroll-hook';
 
 import CloudinaryImage from './CloudinaryImage';
-
-import { fetchUserPhoto } from '../redux/action/photo';
-
-import orm from '../redux/orm';
+import FullWidthSpinner from './FullWidthSpinner';
+import Snackbar from './Snackbar';
+import { useUserPhotosList } from '../react-query/photo';
 
 const useStyles = makeStyles((theme) => ({
   w_100: {
@@ -45,10 +38,30 @@ const breakpointColumnsObj = {
   768: 1,
 };
 
-function UserPhotos({ username, fetchUserPhoto, photos, pagination }) {
+function UserPhotosList({ username }) {
   const classes = useStyles();
-  const [fetching, setFetching] = React.useState(false);
-  return (
+
+  const {
+    status,
+    canFetchMore,
+    isFetchingMore,
+    isFetching,
+    fetchMore,
+    data,
+    error,
+  } = useUserPhotosList(username);
+
+  const infiniteRef = useInfiniteScroll({
+    loading: isFetchingMore || isFetching,
+    hasNextPage: !!canFetchMore || isFetchingMore,
+    onLoadMore: () => {
+      fetchMore();
+    },
+  });
+
+  return status === 'loading' ? (
+    <FullWidthSpinner />
+  ) : (
     <div>
       <Typography
         gutterBottom
@@ -58,72 +71,43 @@ function UserPhotos({ username, fetchUserPhoto, photos, pagination }) {
       >
         Posts
       </Typography>
-      {photos.length === 0 && !pagination.hasMore && (
+      {!data[0]?.length && !isFetching && !canFetchMore && (
         <Typography component="p" variant="subtitle1">
           No photos found
         </Typography>
       )}
-      <InfiniteScroll
-        pageStart={0}
-        loadMore={() => {
-          if (!fetching) {
-            setFetching(true);
-            fetchUserPhoto(username, pagination.curPage + 1, () => {
-              setFetching(false);
-            });
-          }
-        }}
-        hasMore={pagination.hasMore}
-        loader={
-          <div
-            className={`${classes.w_100} ${classes.textCenter} ${classes.mt_1}`}
-            key="1"
-          >
-            <CircularProgress color="inherit" size={20} />
-          </div>
-        }
-      >
+      <div ref={infiniteRef}>
         <Masonry
           breakpointCols={breakpointColumnsObj}
-          className={classes.masonryGrid}
           columnClassName={classes.masonryGridColumn}
+          className={classes.masonryGrid}
         >
-          {photos.map((photo) => (
-            <Link
-              underline="none"
-              color="inherit"
-              component={RouterLink}
-              to={`/p/${photo._id}`}
-            >
-              <CloudinaryImage
+          {data.map((photosGroup) =>
+            photosGroup.map((photo) => (
+              <Link
+                underline="none"
+                color="inherit"
+                component={RouterLink}
+                to={`/p/${photo._id}`}
                 key={photo._id}
-                publicId={photo.cloudinaryPublicId}
-                alt={photo.tags.join(' ')}
-              />
-            </Link>
-          ))}
+              >
+                <CloudinaryImage
+                  publicId={photo.cloudinaryPublicId}
+                  alt={photo.tags.join(' ')}
+                />
+              </Link>
+            ))
+          )}
         </Masonry>
-      </InfiniteScroll>
+        {(isFetchingMore || isFetching || !!canFetchMore) && (
+          <FullWidthSpinner />
+        )}
+        {status === 'error' && (
+          <Snackbar severity="error" message={error.message} />
+        )}
+      </div>
     </div>
   );
 }
 
-const mapState = ({ entities, pagination }, ownProps) => {
-  const username = ownProps.username;
-  const userPhotoPagination = pagination.userPhoto[username] || {
-    curPage: 0,
-    hasMore: true,
-  };
-  const session = orm.session(entities);
-
-  const user = session.User.get({ username });
-
-  return {
-    pagination: userPhotoPagination,
-    photos: user ? user.photos.toRefArray() : [],
-  };
-};
-
-const mapDispatch = { fetchUserPhoto };
-
-export default connect(mapState, mapDispatch)(UserPhotos);
+export default UserPhotosList;
