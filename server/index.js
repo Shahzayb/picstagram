@@ -1,8 +1,13 @@
 const express = require('express');
+const app = express();
 
 // require middlewares
 const logger = require('morgan');
 const compression = require('compression');
+
+const env = app.get('env');
+// setup dev environment
+require('./config/dev').setup(env);
 
 // require routes
 const userRoute = require('./route/user');
@@ -10,8 +15,6 @@ const photoRoute = require('./route/photo');
 const commentRoute = require('./route/comment');
 const timelineRoute = require('./route/timeline');
 const cloudinaryRoute = require('./route/cloudinary');
-
-const app = express();
 
 // mount middlewares
 app.use(logger('combined'));

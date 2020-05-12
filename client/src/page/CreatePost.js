@@ -105,7 +105,7 @@ const CreatePost = (props) => {
       setUploaded(false);
       setUploadFailed(true);
     }
-  }, [image, title]);
+  }, [image, title, username]);
 
   return (
     <main>

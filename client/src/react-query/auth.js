@@ -1,9 +1,4 @@
-import { useQuery, queryCache } from 'react-query';
-import { getMyProfile } from '../api/user';
-
-export function useEnsureLogin() {
-  return useQuery('auth', getMyProfile);
-}
+import { queryCache } from 'react-query';
 
 export function setAuthUser(user) {
   queryCache.setQueryData('auth', user);

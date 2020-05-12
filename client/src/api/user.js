@@ -37,6 +37,40 @@ export const loginUser = async (credentials) => {
   }
 };
 
+export async function forgotPassword(email) {
+  const url = '/api/user/forgot-password';
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+}
+
+export async function resetPassword(password, userId, query) {
+  const url = `/api/user/${userId}/reset-password${query}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password }),
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+}
+
 export const postUser = async (user) => {
   const url = '/api/user';
 

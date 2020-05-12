@@ -31,8 +31,8 @@ exports.postUser = [
       .not()
       .isEmpty()
       .withMessage('please enter email address')
-      .customSanitizer((email) => email.toLowerCase())
       .isEmail()
+      .normalizeEmail()
       .withMessage('please enter valid email')
       .custom((email /*, { req }*/) => {
         return User.exists({ email }).then((exist) => {
@@ -46,7 +46,6 @@ exports.postUser = [
         'account with this email already exists. please enter some other email address'
       ),
     body('password')
-      .trim()
       .not()
       .isEmpty()
       .withMessage('please enter password')
@@ -63,7 +62,53 @@ exports.loginUser = [
     .isEmpty()
     .withMessage('Please enter username')
     .customSanitizer((username) => username.toLowerCase()),
-  body('password').trim().not().isEmpty().withMessage('please enter password'),
+  body('password').not().isEmpty().withMessage('please enter password'),
+  errorMiddleware,
+];
+
+exports.forgotPassword = [
+  body('email')
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage('please enter email address')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('please enter valid email')
+    .custom((email) => {
+      return User.exists({ email }).then((exist) => {
+        if (!exist) {
+          throw new Error();
+        }
+        return true;
+      });
+    })
+    .withMessage(
+      'account with this email does not exist. please enter some other email address'
+    ),
+
+  errorMiddleware,
+];
+
+exports.resetPassword = [
+  param('userId')
+    .custom((userId) => {
+      return User.exists({ _id: userId }).then((exist) => {
+        if (!exist) {
+          throw new Error();
+        }
+        return true;
+      });
+    })
+    .withMessage(
+      'account with this userId does not exist. please enter valid userId'
+    ),
+  body('password')
+    .not()
+    .isEmpty()
+    .withMessage('please enter password')
+    .isLength({ min: 8 })
+    .withMessage('please enter password with at least 8 character'),
   errorMiddleware,
 ];
 
@@ -96,7 +141,7 @@ exports.updateAccount = [
     .not()
     .isEmpty()
     .withMessage('Please enter email')
-    .customSanitizer((email) => email.toLowerCase())
+    .normalizeEmail()
     .isEmail()
     .withMessage('please enter valid email')
     .custom((email, { req }) => {

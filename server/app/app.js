@@ -2,11 +2,7 @@ const express = require('express');
 const path = require('path');
 
 const app = require('../index');
-
 const env = app.get('env');
-
-// setup dev environment
-require('../config/dev').setup(env);
 
 if (env === 'production') {
   app.use(express.static(path.join(__dirname, '../../client/build/')));
