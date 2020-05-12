@@ -1,7 +1,6 @@
 import React from 'react';
-// import InfiniteScroll from 'react-infinite-scroller';
 
-import { CircularProgress, makeStyles, Container } from '@material-ui/core';
+import { makeStyles, Container } from '@material-ui/core';
 
 import TimelinePost from '../component/Post';
 import Snackbar from '../component/Snackbar';

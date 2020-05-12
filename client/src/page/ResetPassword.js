@@ -55,7 +55,7 @@ function ResetPassword(props) {
     if (data) {
       login(data.user, data.token);
     }
-  }, [data]);
+  }, [data, login]);
 
   const formik = useFormik({
     initialValues: { password: '' },
