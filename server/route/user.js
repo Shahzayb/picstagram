@@ -10,6 +10,10 @@ router.post('/', controller.postUser);
 // login user
 router.post('/login', controller.loginUser);
 
+router.post('/forgot-password', controller.forgotPassword);
+
+router.post('/:userId/reset-password/', controller.resetPassword);
+
 // get my account info
 router.get('/', auth, controller.getMyProfile);
 

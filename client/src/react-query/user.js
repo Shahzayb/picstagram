@@ -10,6 +10,8 @@ import {
   unfollowUser,
   getUserFollower,
   getUserFollowing,
+  forgotPassword,
+  resetPassword,
 } from '../api/user';
 import { pageSize } from '../config/env';
 
@@ -24,6 +26,24 @@ async function fetchUser(key, username) {
 
 export function useFetchUser(username) {
   return useQuery(['users', username], fetchUser);
+}
+
+export function useForgotPassword() {
+  return useMutation(forgotPassword);
+}
+
+export function useResetPassword() {
+  return useMutation(({ password, userId, query }) => {
+    return resetPassword(password, userId, query).catch((res) => {
+      if (res.status === 422) {
+        return res.json().then(({ errors }) => {
+          return Promise.reject(errors[0].msg);
+        });
+      } else {
+        return Promise.reject('invalid userId or token');
+      }
+    });
+  });
 }
 
 async function toggleFollow({

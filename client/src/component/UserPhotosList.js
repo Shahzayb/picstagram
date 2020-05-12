@@ -1,14 +1,12 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
-import { Typography, makeStyles, Link } from '@material-ui/core';
-import Masonry from 'react-masonry-css';
+import { Typography, makeStyles } from '@material-ui/core';
 import { useInfiniteScroll } from 'react-infinite-scroll-hook';
 
-import CloudinaryImage from './CloudinaryImage';
 import FullWidthSpinner from './FullWidthSpinner';
 import Snackbar from './Snackbar';
 import { useUserPhotosList } from '../react-query/photo';
+import MasonryGrid from './MasonryGrid';
 
 const useStyles = makeStyles((theme) => ({
   w_100: {
@@ -20,23 +18,7 @@ const useStyles = makeStyles((theme) => ({
   mt_1: {
     marginTop: '1rem',
   },
-
-  masonryGrid: {
-    display: 'flex',
-    marginLeft: '-1rem' /* gutter size offset */,
-    width: 'auto',
-  },
-  masonryGridColumn: {
-    paddingLeft: '1rem' /* gutter size */,
-    backgroundClip: 'padding-box',
-  },
 }));
-
-const breakpointColumnsObj = {
-  default: 3,
-  992: 2,
-  768: 1,
-};
 
 function UserPhotosList({ username }) {
   const classes = useStyles();
@@ -59,6 +41,9 @@ function UserPhotosList({ username }) {
     },
   });
 
+  // flat the array
+  const photos = data.flat();
+
   return status === 'loading' ? (
     <FullWidthSpinner />
   ) : (
@@ -77,28 +62,7 @@ function UserPhotosList({ username }) {
         </Typography>
       )}
       <div ref={infiniteRef}>
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          columnClassName={classes.masonryGridColumn}
-          className={classes.masonryGrid}
-        >
-          {data.map((photosGroup) =>
-            photosGroup.map((photo) => (
-              <Link
-                underline="none"
-                color="inherit"
-                component={RouterLink}
-                to={`/p/${photo._id}`}
-                key={photo._id}
-              >
-                <CloudinaryImage
-                  publicId={photo.cloudinaryPublicId}
-                  alt={photo.tags.join(' ')}
-                />
-              </Link>
-            ))
-          )}
-        </Masonry>
+        <MasonryGrid photos={photos} />
         {(isFetchingMore || isFetching || !!canFetchMore) && (
           <FullWidthSpinner />
         )}

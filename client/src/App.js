@@ -14,9 +14,11 @@ import Post from './page/Post';
 import Comments from './page/Comments';
 import Followers from './page/Followers';
 import Followings from './page/Followings';
+import ForgotPassword from './page/ForgotPassword';
 
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
 import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
+import ResetPassword from './page/ResetPassword';
 
 function App() {
   let location = useLocation();
@@ -54,6 +56,12 @@ function App() {
           <AuthenticatedAccessibleRoute exact path="/account/edit">
             <div>edit account</div>
           </AuthenticatedAccessibleRoute>
+          <UnauthenticatedAccessibleRoute exact path="/forgot-password">
+            <ForgotPassword />
+          </UnauthenticatedAccessibleRoute>
+          <UnauthenticatedAccessibleRoute path="/reset-password/:userId">
+            <ResetPassword />
+          </UnauthenticatedAccessibleRoute>
           <AuthenticatedAccessibleRoute exact path="/account/change-password">
             <div>change password</div>
           </AuthenticatedAccessibleRoute>
