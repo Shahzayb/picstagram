@@ -85,3 +85,21 @@ export const getPhotoById = async (photoId) => {
     return Promise.reject(response);
   }
 };
+
+export const deletePhoto = async (photoId) => {
+  const jwtToken = localStorage.getItem('token') || '';
+  const url = `/api/photo/${photoId}`;
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+};

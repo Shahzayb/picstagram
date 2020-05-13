@@ -44,8 +44,8 @@ exports.generateResetPasswordTemplate = (to, username, link) => {
  */
 
 //
-// setTimeout(() => {
-//   console.log(process.env.SENDGRID_API_KEY);
+//
+//
 //   const msg = {
 //     to: 'test@example.com',
 //     from: 'test@example.com',
@@ -57,4 +57,4 @@ exports.generateResetPasswordTemplate = (to, username, link) => {
 //     .send(msg)
 //     .then(console.log)
 //     .catch((e) => console.log(JSON.stringify(e, null, 4)));
-// }, 2000);
+//

@@ -83,6 +83,8 @@ exports.getPhoto = [
   },
 ];
 
+exports.deletePhoto = [photoIdParamValidator, errorMiddleware];
+
 exports.likePhoto = [photoIdParamValidator, errorMiddleware];
 
 exports.unlikePhoto = [photoIdParamValidator, errorMiddleware];

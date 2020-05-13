@@ -14,7 +14,7 @@ router.patch('/:photoId/like', auth, controller.likePhoto);
 router.patch('/:photoId/unlike', auth, controller.unlikePhoto);
 
 // delete photo
-router.delete('/:photoId', auth, (req, res) => res.end());
+router.delete('/:photoId', auth, controller.deletePhoto);
 
 // post comment on photo
 router.post('/:photoId/comment', auth, controller.postComment);

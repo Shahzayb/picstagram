@@ -2,12 +2,24 @@ import React from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { format } from 'timeago.js';
 
-import { Paper, Link, Avatar, makeStyles, Typography } from '@material-ui/core';
+import {
+  Paper,
+  Link,
+  Avatar,
+  makeStyles,
+  Typography,
+  IconButton,
+  CircularProgress,
+} from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
+import Snackbar from './Snackbar';
 import CloudinaryImage from './CloudinaryImage';
 import CreateComment from './CreateComment';
 import LikeButton from './LikeButton';
 import { isSmallScreen } from '../util/screen';
+import { useAuth } from '../context/auth-context';
+import { useDeletePhoto } from '../react-query/photo';
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
@@ -54,16 +66,60 @@ const useStyles = makeStyles((theme) => ({
   grow: {
     flex: 1,
   },
+  delete: {
+    color: theme.palette.error.light,
+    marginRight: '5px',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+    backdropFilter: 'opacity(0.5)',
+  },
 }));
 
 function Post({ photo }) {
   const classes = useStyles();
   const location = useLocation();
+  const { user: authUser } = useAuth();
+  const [mutate, { status, data, error, reset }] = useDeletePhoto();
   const insideModal = !isSmallScreen();
 
+  const isMine = photo.user._id === authUser._id;
+
   return (
-    <Paper variant="outlined" square>
-      <header>
+    <Paper style={{ position: 'relative' }} variant="outlined" square>
+      <Snackbar
+        open={!!error}
+        onClose={() => reset()}
+        severity="error"
+        message={'Failed to delete post'}
+      />
+      <Snackbar
+        open={!!data}
+        onClose={() => reset()}
+        severity="success"
+        message={'Post is successfully deleted'}
+      />
+      {status === 'loading' && (
+        <div className={classes.overlay}>
+          <CircularProgress color="inherit" size={60} />
+        </div>
+      )}
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Link
           component={RouterLink}
           to={`/@${photo.user.username}`}
@@ -80,6 +136,17 @@ function Post({ photo }) {
             {photo.user.username}
           </Typography>
         </Link>
+        {isMine && (
+          <IconButton
+            onClick={() => {
+              mutate(photo._id);
+            }}
+            aria-label="delete"
+            className={classes.delete}
+          >
+            <DeleteIcon />
+          </IconButton>
+        )}
       </header>
       <CloudinaryImage
         publicId={photo.cloudinaryPublicId}
