@@ -3,6 +3,8 @@ const Photo = require('../model/photo');
 const Like = require('../model/like');
 const Comment = require('../model/comment');
 
+const cloudinary = require('../lib/cloudinary');
+
 const validators = require('./photo.validator');
 
 exports.getPhoto = [
@@ -71,6 +73,28 @@ exports.getPhoto = [
       const photo = await Photo.aggregate(pipeline);
 
       res.json(photo[0]);
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  },
+];
+
+exports.deletePhoto = [
+  validators.deletePhoto,
+  async (req, res) => {
+    try {
+      const photo = await Photo.findById(req.params.photoId);
+      if (photo.userId.toString() !== req.user._id.toString()) {
+        return res.status(422).send({ msg: 'cannot delete this post' });
+      }
+
+      await Promise.all([
+        cloudinary.uploader.destroy(photo.cloudinaryPublicId),
+        photo.remove(),
+      ]);
+
+      res.status(200).send({ msg: 'successfully deleted post' });
     } catch (e) {
       console.log(e);
       res.status(500).send();

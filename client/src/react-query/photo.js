@@ -10,9 +10,11 @@ import {
   getComments,
   postComment,
   getPhotoById,
+  deletePhoto,
 } from '../api/photo';
 import { pageSize } from '../config/env';
 import { getUserPhoto } from '../api/user';
+import { useAuth } from '../context/auth-context';
 
 const toggleLike = async ({ photoId, liked }) => {
   try {
@@ -148,6 +150,44 @@ export function useUserPhotosList(username) {
         return allGroups.length + 1;
       }
       return 0;
+    },
+  });
+}
+
+export function useDeletePhoto() {
+  const {
+    user: { username },
+  } = useAuth();
+  return useMutation(deletePhoto, {
+    onSuccess: (data, photoId) => {
+      const oldTimeline = queryCache.getQueryData('timeline');
+      if (oldTimeline) {
+        queryCache.setQueryData('timeline', (groups) => {
+          groups.forEach((group, i) => {
+            groups[i] = group.filter((post) => post._id !== photoId);
+          });
+          return groups;
+        });
+      }
+
+      const oldUserPhotos = queryCache.getQueryData(['user_photos', username]);
+
+      if (oldUserPhotos) {
+        queryCache.setQueryData(['user_photos', username], (groups) => {
+          groups.forEach((group, i) => {
+            groups[i] = group.filter((post) => post._id !== photoId);
+          });
+          return groups;
+        });
+      }
+
+      queryCache.removeQueries(['photos', photoId], {
+        exact: true,
+      });
+
+      queryCache.removeQueries(['comments', photoId], {
+        exact: true,
+      });
     },
   });
 }
