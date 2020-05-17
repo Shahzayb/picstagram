@@ -106,22 +106,6 @@ export const getProfile = async (username) => {
   }
 };
 
-export const getUserPhoto = async (username, page) => {
-  const url = `/api/user/${username}/photo?page=${page}&size=${pageSize}`;
-
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (response.ok) {
-    return response.json();
-  } else {
-    return Promise.reject(response);
-  }
-};
-
 export const getUserFollower = async (username, page) => {
   const url = `/api/user/${username}/follower?page=${page}&size=${pageSize}`;
 

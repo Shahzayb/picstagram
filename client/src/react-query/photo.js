@@ -7,13 +7,12 @@ import {
 import {
   likePhoto,
   unlikePhoto,
-  getComments,
-  postComment,
   getPhotoById,
   deletePhoto,
 } from '../api/photo';
+import { getComments, postComment } from '../api/comment';
 import { pageSize } from '../config/env';
-import { getUserPhoto } from '../api/user';
+import { getUserPhoto } from '../api/photo';
 import { useAuth } from '../context/auth-context';
 
 const toggleLike = async ({ photoId, liked }) => {
