@@ -2,6 +2,7 @@ import React from 'react';
 import { setAuthUser } from '../react-query/auth';
 import { getMyProfile } from '../api/user';
 import FullPageSpinner from '../component/FullPageSpinner';
+import { queryCache } from 'react-query';
 
 const AuthContext = React.createContext();
 AuthContext.displayName = 'AuthContext';
@@ -37,6 +38,7 @@ function AuthProvider(props) {
   }, []);
 
   const logout = React.useCallback(() => {
+    queryCache.clear();
     localStorage.removeItem('token');
     setLoading(true);
     setAuthUser(null);

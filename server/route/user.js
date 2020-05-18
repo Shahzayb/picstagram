@@ -39,6 +39,6 @@ router.get('/:username/following', controller.getFollowing);
 router.get('/:username/photo', controller.photoByUsername);
 
 // get suggested users ( i.e. to follow )
-router.get('/:username/suggestion', (req, res) => res.end());
+router.get('/:username/suggestion', auth, controller.getUserSuggestions);
 
 module.exports = router;

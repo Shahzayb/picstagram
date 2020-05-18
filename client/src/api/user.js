@@ -173,3 +173,21 @@ export const unfollowUser = async (username) => {
     return Promise.reject(response);
   }
 };
+
+export const getUserSuggestions = async (username) => {
+  const jwtToken = localStorage.getItem('token') || '';
+  const url = `/api/user/${username}/suggestion`;
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+};
