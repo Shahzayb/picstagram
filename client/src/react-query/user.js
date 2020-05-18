@@ -12,6 +12,7 @@ import {
   getUserFollowing,
   forgotPassword,
   resetPassword,
+  getUserSuggestions,
 } from '../api/user';
 import { pageSize } from '../config/env';
 
@@ -64,6 +65,38 @@ async function toggleFollow({
   } catch (e) {
     throw new Error(`Failed to ${isFollowed ? 'unfollow' : 'follow'} user`);
   }
+}
+
+export function useToggleFollowSuggested() {
+  return useMutation(toggleFollow, {
+    onMutate: ({ followerUsername, followeeUsername, isFollowed }) => {
+      const previousUsers = queryCache.getQueryData('user_suggestions');
+
+      if (previousUsers) {
+        queryCache.setQueryData('user_suggestions', (old) => {
+          old.forEach((user) => {
+            if (user.username === followeeUsername) {
+              user.isFollowedByMe = !isFollowed;
+            }
+          });
+          return old;
+        });
+      }
+
+      return () => queryCache.setQueryData('user_suggestions', previousUsers);
+    },
+    onSuccess: (data, { followerUsername, followeeUsername, isFollowed }) => {
+      queryCache.refetchQueries(['users', followeeUsername], { force: true });
+      queryCache.refetchQueries(['users', followerUsername], { force: true });
+      queryCache.refetchQueries(['following', followerUsername], {
+        force: true,
+      });
+      queryCache.refetchQueries(['followers', followeeUsername], {
+        force: true,
+      });
+    },
+    onError: (err, vars, rollback) => rollback(),
+  });
 }
 
 export function useToggleFollow() {
@@ -172,4 +205,10 @@ export function useFollowingList(username) {
       return 0;
     },
   });
+}
+
+export function useUserSuggestionList(username) {
+  return useQuery('user_suggestions', username, (key, username) =>
+    getUserSuggestions(username)
+  );
 }

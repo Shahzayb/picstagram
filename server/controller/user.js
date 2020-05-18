@@ -398,3 +398,23 @@ exports.getFollower = [
     }
   },
 ];
+
+exports.getUserSuggestions = async (req, res) => {
+  try {
+    const users = await User.find(
+      {
+        username: { $ne: req.user.username },
+        follower: { $nin: [req.user._id] },
+      },
+      {
+        username: 1,
+        profilePicUrl: 1,
+      }
+    ).limit(20);
+
+    res.send(users);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send();
+  }
+};

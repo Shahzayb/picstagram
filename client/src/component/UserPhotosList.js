@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Typography, makeStyles } from '@material-ui/core';
+import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
 import { useInfiniteScroll } from 'react-infinite-scroll-hook';
 
 import FullWidthSpinner from './FullWidthSpinner';
@@ -17,6 +18,15 @@ const useStyles = makeStyles((theme) => ({
   },
   mt_1: {
     marginTop: '1rem',
+  },
+  no_content: {
+    width: '100%',
+    marginTop: '5rem',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    color: theme.palette.grey[600],
   },
 }));
 
@@ -57,9 +67,12 @@ function UserPhotosList({ username }) {
         Posts
       </Typography>
       {!data[0]?.length && !isFetching && !canFetchMore && (
-        <Typography component="p" variant="subtitle1">
-          No photos found
-        </Typography>
+        <div className={classes.no_content}>
+          <ImageOutlinedIcon fontSize="large" />
+          <Typography component="p" variant="subtitle1">
+            No photos found
+          </Typography>
+        </div>
       )}
       <div ref={infiniteRef}>
         <MasonryGrid photos={photos} />
