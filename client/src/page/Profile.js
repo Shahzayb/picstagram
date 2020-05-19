@@ -61,12 +61,10 @@ const Profile = () => {
     <FullWidthSpinner />
   ) : status === 'error' ? (
     <div>
-      <div>
-        Failed to fetch user.{' '}
-        <Button size="small" color="secondary" onClick={() => refetch()}>
-          Try again
-        </Button>
-      </div>
+      Failed to fetch user.{' '}
+      <Button size="small" color="secondary" onClick={() => refetch()}>
+        Try again
+      </Button>
     </div>
   ) : (
     <main>
