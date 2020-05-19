@@ -5,6 +5,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 
 import FollowToggle from '../component/FollowToggle';
 import UserPhotosList from '../component/UserPhotosList';
@@ -12,7 +13,6 @@ import ResponsiveButton from '../component/ResponsiveButton';
 import { useAuth } from '../context/auth-context';
 import { useFetchUser } from '../react-query/user';
 import FullWidthSpinner from '../component/FullWidthSpinner';
-import Snackbar from '../component/Snackbar';
 import { isSmallScreen } from '../util/screen';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,12 +55,17 @@ const Profile = () => {
 
   const insideModal = !isSmallScreen();
 
-  const { status, data: user, error } = useFetchUser(username);
+  const { status, data: user, refetch } = useFetchUser(username);
 
   return status === 'loading' ? (
     <FullWidthSpinner />
   ) : status === 'error' ? (
-    <Snackbar severity="error" message={error.message} />
+    <div>
+      Failed to fetch user.{' '}
+      <Button size="small" color="secondary" onClick={() => refetch()}>
+        Try again
+      </Button>
+    </div>
   ) : (
     <main>
       <header>
