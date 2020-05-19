@@ -103,7 +103,9 @@ function UserSuggestion() {
           }}
         >
           {data?.length === 0 && (
-            <div style={flexCenter}>No Suggestions Found</div>
+            <div style={{ ...flexCenter, color: '#555' }}>
+              No Suggestions Found
+            </div>
           )}
           {data.map((user) => (
             <div style={{ padding: '1rem' }} key={user._id}>
