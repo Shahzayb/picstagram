@@ -15,6 +15,7 @@ import Comments from './page/Comments';
 import Followers from './page/Followers';
 import Followings from './page/Followings';
 import ForgotPassword from './page/ForgotPassword';
+import MobileUserSearch from './page/MobileUserSearch';
 
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
 import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
@@ -50,8 +51,8 @@ function App() {
           <AuthenticatedAccessibleRoute exact path="/post">
             <CreatePost />
           </AuthenticatedAccessibleRoute>
-          <Route exact path="/search/:term">
-            <div>search result</div>
+          <Route exact path="/mobile-search">
+            <MobileUserSearch />
           </Route>
           <AuthenticatedAccessibleRoute exact path="/account/edit">
             <div>edit account</div>

@@ -47,7 +47,7 @@ function Comment({ comment }) {
 
   const isMine = authUserId === comment.user._id;
 
-  const [mutate, { status, error, reset }] = useDeleteComment();
+  const [mutate, { status, reset }] = useDeleteComment();
   return (
     <div
       style={{
