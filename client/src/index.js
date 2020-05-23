@@ -4,9 +4,33 @@ import { Router } from 'react-router-dom';
 import { ReactQueryDevtools } from 'react-query-devtools';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ReactQueryConfigProvider } from 'react-query';
+import algoliasearch from 'algoliasearch/lite';
+import { InstantSearch, Configure } from 'react-instantsearch-dom';
 
 import { AuthProvider } from './context/auth-context';
 import history from './lib/history';
+
+const algoliaClient = algoliasearch(
+  process.env.REACT_APP_ALGOLIA_APP_ID,
+  process.env.REACT_APP_ALGOLIA_SEARCH_API_KEY
+);
+
+const searchClient = {
+  search(requests) {
+    if (requests.every(({ params }) => !params.query || !params.query.trim())) {
+      return Promise.resolve({
+        results: requests.map(() => ({
+          hits: [],
+          nbHits: 0,
+          nbPages: 0,
+          processingTimeMS: 0,
+        })),
+      });
+    }
+
+    return algoliaClient.search(requests);
+  },
+};
 
 const queryConfig = {
   refetchAllOnWindowFocus: false,
@@ -23,7 +47,11 @@ let render = () => {
   const App = require('./App').default;
 
   ReactDOM.render(
-    <>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={process.env.REACT_APP_ALGOLIA_SEARCH_INDEX_NAME}
+    >
+      <Configure hitsPerPage={8} />
       <CssBaseline />
       <Router history={history}>
         <ReactQueryConfigProvider config={queryConfig}>
@@ -33,7 +61,7 @@ let render = () => {
         </ReactQueryConfigProvider>
       </Router>
       <ReactQueryDevtools initialIsOpen={false} />
-    </>,
+    </InstantSearch>,
     rootEl
   );
 };

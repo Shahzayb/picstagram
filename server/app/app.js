@@ -15,6 +15,9 @@ if (env === 'production') {
 // connect to database
 require('../util/db');
 
+// prepare search index
+require('../util/search');
+
 // start server
 const PORT = process.env.PORT || 5000;
 

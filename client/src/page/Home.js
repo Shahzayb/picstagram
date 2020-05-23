@@ -2,6 +2,7 @@ import React from 'react';
 
 import { makeStyles, Container, Typography } from '@material-ui/core';
 import ImageOutlinedIcon from '@material-ui/icons/ImageOutlined';
+
 import TimelinePost from '../component/Post';
 import Snackbar from '../component/Snackbar';
 import { useInfiniteScroll } from 'react-infinite-scroll-hook';

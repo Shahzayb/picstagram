@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
     <Container
       className={classes.sm_px_8}
       maxWidth="md"
-      style={{ paddingTop: '2rem' }}
+      style={{ paddingTop: '6rem' }}
     >
       {children}
     </Container>

@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const gravatar = require('gravatar');
 const jwt = require('jsonwebtoken');
 
+const search = require('../util/search');
 const User = require('../model/user');
 const Photo = require('../model/photo');
 const validators = require('./user.validator');
@@ -26,6 +27,8 @@ exports.postUser = [
         password,
         profilePicUrl,
       });
+
+      await search.addUser(user);
 
       res.status(201).json({
         user: {

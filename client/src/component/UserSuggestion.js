@@ -45,7 +45,14 @@ function UserProfile({ user }) {
   } = useAuth();
 
   return (
-    <div>
+    <div
+      style={{
+        width: '100px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
       <Link
         underline="none"
         color="inherit"
@@ -58,7 +65,7 @@ function UserProfile({ user }) {
         }}
       >
         <Avatar alt={user.name} src={user.profilePicUrl} />
-        <Typography style={{ paddingTop: '8px' }} variant="caption">
+        <Typography noWrap style={{ paddingTop: '8px' }} variant="caption">
           {user.username}
         </Typography>
       </Link>

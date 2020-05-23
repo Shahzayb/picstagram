@@ -10,10 +10,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import SearchIcon from '@material-ui/icons/SearchOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 
 import ResponsiveButton from './ResponsiveButton';
+import UserSearch from './UserSearch';
 import { isSmallScreen } from '../util/screen';
 import { useAuth } from '../context/auth-context';
 
@@ -33,6 +35,16 @@ const useStyles = makeStyles((theme) => ({
     },
     display: 'flex',
     alignItems: 'center',
+  },
+  // desktop: { display: 'none' },
+  // mobile: { display: 'block' },
+  [theme.breakpoints.up('sm')]: {
+    desktop: { display: 'block' },
+    mobile: { display: 'none' },
+  },
+  [theme.breakpoints.down('sm')]: {
+    desktop: { display: 'none' },
+    mobile: { display: 'block' },
   },
 }));
 
@@ -59,8 +71,8 @@ function Navbar(props) {
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static">
-        <Toolbar>
+      <AppBar position="fixed">
+        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Link
             underline="none"
             color="inherit"
@@ -73,7 +85,23 @@ function Navbar(props) {
             </Typography>
           </Link>
 
-          <div className={`${classes.spacing} ${classes.ml_auto}`}>
+          <div className={classes.desktop}>
+            <UserSearch />
+          </div>
+
+          <div className={`${classes.spacing}`}>
+            <div className={classes.mobile}>
+              <Link
+                color="inherit"
+                component={RouterLink}
+                to={{
+                  pathname: '/mobile-search',
+                }}
+                title="search"
+              >
+                <SearchIcon fontSize="large" />
+              </Link>
+            </div>
             {authenticated && (
               <Link
                 color="inherit"
