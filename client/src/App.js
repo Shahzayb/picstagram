@@ -16,10 +16,12 @@ import Followers from './page/Followers';
 import Followings from './page/Followings';
 import ForgotPassword from './page/ForgotPassword';
 import MobileUserSearch from './page/MobileUserSearch';
+import ResetPassword from './page/ResetPassword';
+import EditProfile from './page/EditProfile';
+import ChangePassword from './page/ChangePassword';
 
 import UnauthenticatedAccessibleRoute from './hoc/UnauthenticatedAccessibleRoute';
 import AuthenticatedAccessibleRoute from './hoc/AuthenticatedAccessibleRoute';
-import ResetPassword from './page/ResetPassword';
 
 function App() {
   let location = useLocation();
@@ -54,18 +56,20 @@ function App() {
           <Route exact path="/mobile-search">
             <MobileUserSearch />
           </Route>
+
           <AuthenticatedAccessibleRoute exact path="/account/edit">
-            <div>edit account</div>
+            <EditProfile />
           </AuthenticatedAccessibleRoute>
+          <AuthenticatedAccessibleRoute exact path="/account/change-password">
+            <ChangePassword />
+          </AuthenticatedAccessibleRoute>
+
           <UnauthenticatedAccessibleRoute exact path="/forgot-password">
             <ForgotPassword />
           </UnauthenticatedAccessibleRoute>
           <UnauthenticatedAccessibleRoute path="/reset-password/:userId">
             <ResetPassword />
           </UnauthenticatedAccessibleRoute>
-          <AuthenticatedAccessibleRoute exact path="/account/change-password">
-            <div>change password</div>
-          </AuthenticatedAccessibleRoute>
 
           <Route exact path="/@:username">
             <Profile />
