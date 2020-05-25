@@ -14,6 +14,7 @@ import { useAuth } from '../context/auth-context';
 import { useFetchUser } from '../react-query/user';
 import FullWidthSpinner from '../component/FullWidthSpinner';
 import { isSmallScreen } from '../util/screen';
+import AccountSettingsDialog from '../component/AccountSettingsDialog';
 
 const useStyles = makeStyles((theme) => ({
   loader: {
@@ -78,9 +79,18 @@ const Profile = () => {
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Typography gutterBottom variant="h5" component="h1">
-              {user.username}
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography gutterBottom variant="h5" component="h1">
+                {user.username}
+              </Typography>
+              <Typography
+                component="div"
+                gutterBottom
+                style={{ marginLeft: '10px' }}
+              >
+                <AccountSettingsDialog />
+              </Typography>
+            </div>
             <div>
               {authenticated && !isMine && (
                 <FollowToggle
@@ -91,7 +101,16 @@ const Profile = () => {
               )}
               {authenticated && isMine && (
                 <ResponsiveButton variant="outlined">
-                  Edit Account
+                  <Link
+                    color="inherit"
+                    component={RouterLink}
+                    to="/account/edit"
+                    title="edit account"
+                    underline="none"
+                    style={{ width: '100%', height: '100%' }}
+                  >
+                    Edit Profile
+                  </Link>
                 </ResponsiveButton>
               )}
             </div>

@@ -88,6 +88,25 @@ export const postUser = async (user) => {
   }
 };
 
+export const updateUser = async (user) => {
+  const jwtToken = localStorage.getItem('token') || '';
+  const url = '/api/user';
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(user),
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+};
+
 export const getProfile = async (username) => {
   const url = `/api/user/${username}`;
   const jwtToken = localStorage.getItem('token') || '';

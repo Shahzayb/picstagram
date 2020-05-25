@@ -27,22 +27,22 @@ function AuthProvider(props) {
   }, []);
 
   const login = React.useCallback((user, token) => {
+    setLoading(true);
     if (token) {
       localStorage.setItem('token', token);
     }
-    setLoading(true);
-
+    queryCache.clear();
     setAuthUser(user);
     setUser(user);
+
     setLoading(false);
   }, []);
 
   const logout = React.useCallback(() => {
-    queryCache.clear();
-    localStorage.removeItem('token');
     setLoading(true);
-    setAuthUser(null);
+    localStorage.removeItem('token');
     setUser(null);
+    queryCache.clear();
     setLoading(false);
   }, []);
 

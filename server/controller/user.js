@@ -26,6 +26,7 @@ exports.postUser = [
         email: req.body.email,
         password,
         profilePicUrl,
+        bio: req.body.bio,
       });
 
       await search.addUser(user);
@@ -37,6 +38,7 @@ exports.postUser = [
           name: user.name,
           email: user.email,
           profilePicUrl: user.profilePicUrl,
+          bio: user.bio,
         },
         token,
       });
@@ -92,6 +94,7 @@ exports.loginUser = [
           name: user.name,
           email: user.email,
           profilePicUrl: user.profilePicUrl,
+          bio: user.bio,
         },
         token,
       });
@@ -160,6 +163,7 @@ exports.resetPassword = [
           username: user.username,
           email: user.email,
           profilePic: user.profilePic,
+          bio: user.bio,
         },
         token,
       });

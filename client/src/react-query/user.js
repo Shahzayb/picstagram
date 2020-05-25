@@ -29,6 +29,10 @@ export function useFetchUser(username) {
   return useQuery(['users', username], fetchUser);
 }
 
+export function useAuthUser() {
+  return queryCache.getQueryData('auth');
+}
+
 export function useForgotPassword() {
   return useMutation(forgotPassword);
 }
