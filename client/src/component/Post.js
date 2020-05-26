@@ -85,14 +85,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Post({ photo }) {
+function Post({ photo, onDelete }) {
   const classes = useStyles();
   const location = useLocation();
   const { user: authUser } = useAuth();
   const [mutate, { status, data, error, reset }] = useDeletePhoto();
   const insideModal = !isSmallScreen();
+  const authenticated = !!authUser;
 
-  const isMine = photo.user._id === authUser._id;
+  const isMine = photo.user._id === (authenticated && authUser._id);
 
   return (
     <Paper style={{ position: 'relative' }} variant="outlined" square>
@@ -139,7 +140,16 @@ function Post({ photo }) {
         {isMine && (
           <IconButton
             onClick={() => {
-              mutate(photo._id);
+              if (authenticated) {
+                mutate({
+                  photoId: photo._id,
+                  username: authUser.username,
+                }).then(() => {
+                  if (onDelete) {
+                    onDelete();
+                  }
+                });
+              }
             }}
             aria-label="delete"
             className={classes.delete}

@@ -174,6 +174,22 @@ exports.resetPassword = [
   },
 ];
 
+exports.changePassword = [
+  validators.changePassword,
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      const password = await bcrypt.hash(req.body.new_password, 8);
+      user.password = password;
+      await user.save();
+      res.send({ msg: 'successfully changed password' });
+    } catch (e) {
+      console.log(e);
+      req.status(500).send();
+    }
+  },
+];
+
 exports.updateAccount = [
   validators.updateAccount,
   async (req, res) => {

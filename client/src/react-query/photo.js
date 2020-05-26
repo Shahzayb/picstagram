@@ -13,7 +13,6 @@ import {
 import { getComments, postComment } from '../api/comment';
 import { pageSize } from '../config/env';
 import { getUserPhoto } from '../api/photo';
-import { useAuth } from '../context/auth-context';
 
 const toggleLike = async ({ photoId, liked }) => {
   try {
@@ -154,11 +153,8 @@ export function useUserPhotosList(username) {
 }
 
 export function useDeletePhoto() {
-  const {
-    user: { username },
-  } = useAuth();
   return useMutation(deletePhoto, {
-    onSuccess: (data, photoId) => {
+    onSuccess: (data, { photoId, username }) => {
       const oldTimeline = queryCache.getQueryData('timeline');
       if (oldTimeline) {
         queryCache.setQueryData('timeline', (groups) => {

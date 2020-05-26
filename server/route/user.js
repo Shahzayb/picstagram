@@ -14,6 +14,8 @@ router.post('/forgot-password', controller.forgotPassword);
 
 router.post('/:userId/reset-password/', controller.resetPassword);
 
+router.patch('/change-password', auth, controller.changePassword);
+
 // get my account info
 router.get('/', auth, controller.getMyProfile);
 
