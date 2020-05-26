@@ -67,7 +67,7 @@ export const getPhotoById = async (photoId) => {
   }
 };
 
-export const deletePhoto = async (photoId) => {
+export const deletePhoto = async ({ photoId }) => {
   const jwtToken = localStorage.getItem('token') || '';
   const url = `/api/photo/${photoId}`;
 

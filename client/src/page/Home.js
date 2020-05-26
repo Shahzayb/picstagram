@@ -53,7 +53,7 @@ const Home = (props) => {
 
   const infiniteRef = useInfiniteScroll({
     loading: query.isFetchingMore || query.isFetching,
-    hasNextPage: !!query.canFetchMore || query.isFetchingMore,
+    hasNextPage: !!query.canFetchMore,
     onLoadMore: () => {
       query.fetchMore();
     },

@@ -71,6 +71,28 @@ export async function resetPassword(password, userId, query) {
   }
 }
 
+export async function changePassword(body) {
+  const jwtToken = localStorage.getItem('token') || '';
+  if (!jwtToken) {
+    return Promise.reject();
+  }
+  const url = `/api/user/change-password`;
+
+  const response = await fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${jwtToken}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (response.ok) {
+    return response.json();
+  } else {
+    return Promise.reject(response);
+  }
+}
+
 export const postUser = async (user) => {
   const url = '/api/user';
 

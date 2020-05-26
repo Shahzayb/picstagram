@@ -5,6 +5,7 @@ import { Container, Button } from '@material-ui/core';
 import Post from '../component/Post';
 import FullWidthSpinner from '../component/FullWidthSpinner';
 import { useFetchPhotoById } from '../react-query/photo';
+import history from '../lib/history';
 
 function PostPage() {
   const { photoId } = useParams();
@@ -22,7 +23,12 @@ function PostPage() {
     </div>
   ) : (
     <Container style={{ paddingLeft: 0, paddingRight: 0 }} maxWidth="sm">
-      <Post photo={data} />
+      <Post
+        photo={data}
+        onDelete={() => {
+          history.replace('/');
+        }}
+      />
     </Container>
   );
 }

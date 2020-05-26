@@ -1,4 +1,5 @@
 const { body, param, query } = require('express-validator');
+const bcrypt = require('bcryptjs');
 const { errorMiddleware } = require('../util/validator');
 const User = require('../model/user');
 const jwt = require('jsonwebtoken');
@@ -109,6 +110,33 @@ exports.resetPassword = [
     .withMessage('please enter password')
     .isLength({ min: 8 })
     .withMessage('please enter password with at least 8 character'),
+  errorMiddleware,
+];
+
+exports.changePassword = [
+  body('old_password')
+    .not()
+    .isEmpty()
+    .withMessage('Please enter your old password')
+    .custom((oldPassword, { req }) => {
+      return User.findOne(req.user._id, { password: 1 }).then((user) => {
+        return bcrypt.compare(oldPassword, user.password).then((result) => {
+          if (result) {
+            return Promise.resolve();
+          }
+          return Promise.reject();
+        });
+      });
+    })
+    .withMessage('please enter your old password'),
+  body('new_password')
+    .not()
+    .isEmpty()
+    .withMessage('Please enter new password')
+    .isLength({
+      min: 8,
+    })
+    .withMessage('password is too short'),
   errorMiddleware,
 ];
 
