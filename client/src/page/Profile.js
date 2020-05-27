@@ -83,13 +83,15 @@ const Profile = () => {
               <Typography gutterBottom variant="h5" component="h1">
                 {user.username}
               </Typography>
-              <Typography
-                component="div"
-                gutterBottom
-                style={{ marginLeft: '10px' }}
-              >
-                <AccountSettingsDialog />
-              </Typography>
+              {isMine && (
+                <Typography
+                  component="div"
+                  gutterBottom
+                  style={{ marginLeft: '10px' }}
+                >
+                  <AccountSettingsDialog />
+                </Typography>
+              )}
             </div>
             <div>
               {authenticated && !isMine && (
